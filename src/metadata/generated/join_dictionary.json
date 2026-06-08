@@ -1,0 +1,250 @@
+{
+  "relationships": [
+    {
+      "left_table": "orders",
+      "left_column": "customer_id",
+      "right_table": "customers",
+      "right_column": "customer_id",
+      "relationship_type": "many_to_one",
+      "description": "Many orders belong to one customer"
+    },
+
+    {
+      "left_table": "order_items",
+      "left_column": "order_id",
+      "right_table": "orders",
+      "right_column": "order_id",
+      "relationship_type": "many_to_one",
+      "description": "Many order items belong to one order"
+    },
+
+    {
+      "left_table": "order_items",
+      "left_column": "product_id",
+      "right_table": "products",
+      "right_column": "product_id",
+      "relationship_type": "many_to_one",
+      "description": "Many order items can reference the same product"
+    },
+
+    {
+      "left_table": "order_items",
+      "left_column": "seller_id",
+      "right_table": "sellers",
+      "right_column": "seller_id",
+      "relationship_type": "many_to_one",
+      "description": "Many order items can be fulfilled by the same seller"
+    },
+
+    {
+      "left_table": "order_payments",
+      "left_column": "order_id",
+      "right_table": "orders",
+      "right_column": "order_id",
+      "relationship_type": "many_to_one",
+      "description": "Payments belong to orders"
+    },
+
+    {
+      "left_table": "order_reviews",
+      "left_column": "order_id",
+      "right_table": "orders",
+      "right_column": "order_id",
+      "relationship_type": "many_to_one",
+      "description": "Reviews are associated with orders"
+    },
+
+    {
+      "left_table": "products",
+      "left_column": "product_category_name",
+      "right_table": "product_category_name_translation",
+      "right_column": "product_category_name",
+      "relationship_type": "many_to_one",
+      "description": "Maps Portuguese category names to English names"
+    },
+
+    {
+      "left_table": "customers",
+      "left_column": "customer_zip_code_prefix",
+      "right_table": "geolocation",
+      "right_column": "geolocation_zip_code_prefix",
+      "relationship_type": "many_to_many",
+      "description": "Customer location can be mapped to geolocation data via zip prefix"
+    },
+
+    {
+      "left_table": "sellers",
+      "left_column": "seller_zip_code_prefix",
+      "right_table": "geolocation",
+      "right_column": "geolocation_zip_code_prefix",
+      "relationship_type": "many_to_many",
+      "description": "Seller location can be mapped to geolocation data via zip prefix"
+    },
+
+    {
+      "left_table": "leads_closed",
+      "left_column": "mql_id",
+      "right_table": "leads_qualified",
+      "right_column": "mql_id",
+      "relationship_type": "one_to_one",
+      "description": "Qualified lead information linked to converted lead information"
+    }
+  ],
+
+  "common_join_paths": [
+    {
+      "name": "customer_orders",
+      "path": [
+        "customers.customer_id = orders.customer_id"
+      ],
+      "used_for": [
+        "customer analysis",
+        "order history",
+        "retention analysis"
+      ]
+    },
+
+    {
+      "name": "order_revenue",
+      "path": [
+        "orders.order_id = order_items.order_id"
+      ],
+      "used_for": [
+        "sales analysis",
+        "revenue reporting",
+        "product sales"
+      ]
+    },
+
+    {
+      "name": "order_payments",
+      "path": [
+        "orders.order_id = order_payments.order_id"
+      ],
+      "used_for": [
+        "payment analysis",
+        "revenue analysis"
+      ]
+    },
+
+    {
+      "name": "order_reviews",
+      "path": [
+        "orders.order_id = order_reviews.order_id"
+      ],
+      "used_for": [
+        "customer satisfaction",
+        "review analysis"
+      ]
+    },
+
+    {
+      "name": "product_sales",
+      "path": [
+        "orders.order_id = order_items.order_id",
+        "order_items.product_id = products.product_id"
+      ],
+      "used_for": [
+        "best selling products",
+        "category analysis",
+        "product revenue"
+      ]
+    },
+
+    {
+      "name": "seller_sales",
+      "path": [
+        "orders.order_id = order_items.order_id",
+        "order_items.seller_id = sellers.seller_id"
+      ],
+      "used_for": [
+        "seller performance",
+        "merchant analytics"
+      ]
+    },
+
+    {
+      "name": "category_sales",
+      "path": [
+        "orders.order_id = order_items.order_id",
+        "order_items.product_id = products.product_id",
+        "products.product_category_name = product_category_name_translation.product_category_name"
+      ],
+      "used_for": [
+        "category revenue",
+        "category ranking",
+        "category performance"
+      ]
+    },
+
+    {
+      "name": "customer_reviews",
+      "path": [
+        "customers.customer_id = orders.customer_id",
+        "orders.order_id = order_reviews.order_id"
+      ],
+      "used_for": [
+        "customer satisfaction",
+        "review analysis by customer"
+      ]
+    },
+
+    {
+      "name": "seller_reviews",
+      "path": [
+        "orders.order_id = order_items.order_id",
+        "order_items.seller_id = sellers.seller_id",
+        "orders.order_id = order_reviews.order_id"
+      ],
+      "used_for": [
+        "seller ratings",
+        "seller satisfaction analysis"
+      ]
+    },
+
+    {
+      "name": "customer_product_purchase",
+      "path": [
+        "customers.customer_id = orders.customer_id",
+        "orders.order_id = order_items.order_id",
+        "order_items.product_id = products.product_id"
+      ],
+      "used_for": [
+        "purchase behavior",
+        "recommendations",
+        "customer preferences"
+      ]
+    }
+  ],
+
+  "business_metrics": [
+    {
+      "metric": "total_revenue",
+      "formula": "SUM(order_items.price)"
+    },
+    {
+      "metric": "total_freight",
+      "formula": "SUM(order_items.freight_value)"
+    },
+    {
+      "metric": "average_order_value",
+      "formula": "SUM(order_items.price) / COUNT(DISTINCT orders.order_id)"
+    },
+    {
+      "metric": "total_orders",
+      "formula": "COUNT(DISTINCT orders.order_id)"
+    },
+    {
+      "metric": "total_customers",
+      "formula": "COUNT(DISTINCT customers.customer_unique_id)"
+    },
+    {
+      "metric": "average_review_score",
+      "formula": "AVG(order_reviews.review_score)"
+    },
+    {
+      "metric": "total_products_sold",
+      "formula": "COUNT(order_items.order_item_id)"
+    }
+  ]
+}

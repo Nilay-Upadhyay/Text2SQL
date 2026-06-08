@@ -1,0 +1,38 @@
+[
+  {
+    "from_table": "orders",
+    "from_column": "customer_id",
+    "to_table": "customers",
+    "to_column": "customer_id"
+  },
+  {
+    "from_table": "order_items",
+    "from_column": "order_id",
+    "to_table": "orders",
+    "to_column": "order_id"
+  },
+  {
+    "from_table": "order_items",
+    "from_column": "product_id",
+    "to_table": "products",
+    "to_column": "product_id"
+  },
+  {
+    "from_table": "order_items",
+    "from_column": "seller_id",
+    "to_table": "sellers",
+    "to_column": "seller_id"
+  },
+  {
+    "from_table": "order_payments",
+    "from_column": "order_id",
+    "to_table": "orders",
+    "to_column": "order_id"
+  },
+  {
+    "from_table": "order_reviews",
+    "from_column": "order_id",
+    "to_table": "orders",
+    "to_column": "order_id"
+  }
+]

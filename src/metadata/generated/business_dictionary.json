@@ -1,0 +1,313 @@
+{
+"customers.customer_id": {
+"description": "Unique identifier for a customer record",
+"aliases": ["customer", "buyer", "customer record"],
+"entity_type": "identifier",
+"business_concepts": ["customer"]
+},
+
+"customers.customer_unique_id": {
+"description": "Persistent identifier representing the same customer across multiple orders",
+"aliases": ["unique customer", "repeat customer", "customer account"],
+"entity_type": "identifier",
+"business_concepts": ["customer", "retention"]
+},
+
+"customers.customer_zip_code_prefix": {
+"description": "Customer postal code prefix",
+"aliases": ["zipcode", "zip code", "postal code", "customer zip"],
+"entity_type": "location"
+},
+
+"customers.customer_city": {
+"description": "Customer city",
+"aliases": ["city", "customer city", "buyer city"],
+"entity_type": "location"
+},
+
+"customers.customer_state": {
+"description": "Customer state",
+"aliases": ["state", "region", "province", "customer state"],
+"entity_type": "location"
+},
+
+"orders.order_id": {
+"description": "Unique identifier for an order",
+"aliases": ["order", "purchase", "transaction"],
+"entity_type": "identifier",
+"business_concepts": ["sales", "orders"]
+},
+
+"orders.customer_id": {
+"description": "Customer who placed the order",
+"aliases": ["buyer", "purchaser", "customer"],
+"entity_type": "foreign_key"
+},
+
+"orders.order_status": {
+"description": "Current lifecycle state of the order",
+"aliases": [
+"status",
+"order state",
+"delivery status",
+"fulfillment status"
+],
+"entity_type": "categorical",
+"business_concepts": ["fulfillment", "operations"]
+},
+
+"orders.order_purchase_timestamp": {
+"description": "Timestamp when customer placed the order",
+"aliases": [
+"purchase date",
+"purchase time",
+"order date",
+"order time",
+"transaction date",
+"sale date"
+],
+"entity_type": "datetime",
+"business_concepts": ["sales", "revenue", "orders"]
+},
+
+"orders.order_approved_at": {
+"description": "Timestamp when payment was approved",
+"aliases": [
+"approval date",
+"payment approval date",
+"approved time"
+],
+"entity_type": "datetime",
+"business_concepts": ["payments"]
+},
+
+"orders.order_delivered_carrier_date": {
+"description": "Date when order was handed to carrier",
+"aliases": [
+"shipment date",
+"carrier pickup date",
+"dispatch date"
+],
+"entity_type": "datetime",
+"business_concepts": ["shipping", "logistics"]
+},
+
+"orders.order_delivered_customer_date": {
+"description": "Date when customer received the order",
+"aliases": [
+"delivery date",
+"received date",
+"delivered date"
+],
+"entity_type": "datetime",
+"business_concepts": ["shipping", "customer experience"]
+},
+
+"orders.order_estimated_delivery_date": {
+"description": "Promised delivery date",
+"aliases": [
+"estimated delivery",
+"expected delivery",
+"promised delivery"
+],
+"entity_type": "datetime",
+"business_concepts": ["shipping", "sla"]
+},
+
+"order_items.order_item_id": {
+"description": "Line item identifier within an order",
+"aliases": ["item number", "line item"],
+"entity_type": "identifier"
+},
+
+"order_items.product_id": {
+"description": "Product purchased",
+"aliases": ["product", "item", "sku"],
+"entity_type": "foreign_key",
+"business_concepts": ["catalog"]
+},
+
+"order_items.seller_id": {
+"description": "Seller fulfilling the item",
+"aliases": ["merchant", "vendor", "seller"],
+"entity_type": "foreign_key",
+"business_concepts": ["marketplace"]
+},
+
+"order_items.price": {
+"description": "Sale price of the product excluding freight",
+"aliases": [
+"price",
+"sales amount",
+"item value",
+"product revenue",
+"selling price"
+],
+"entity_type": "monetary",
+"aggregations": ["sum", "avg", "min", "max"]
+},
+
+"order_items.freight_value": {
+"description": "Shipping charge associated with the item",
+"aliases": [
+"shipping cost",
+"delivery fee",
+"freight cost",
+"shipping charge"
+],
+"entity_type": "monetary",
+"aggregations": ["sum", "avg"]
+},
+
+"order_payments.payment_type": {
+"description": "Method used to pay for the order",
+"aliases": [
+"payment method",
+"payment channel",
+"payment mode"
+],
+"entity_type": "categorical",
+"business_concepts": ["payments"]
+},
+
+"order_payments.payment_installments": {
+"description": "Number of payment installments",
+"aliases": [
+"installments",
+"emi",
+"payment terms"
+],
+"entity_type": "numeric"
+},
+
+"order_payments.payment_value": {
+"description": "Amount paid for the order",
+"aliases": [
+"payment amount",
+"paid amount",
+"revenue",
+"transaction value"
+],
+"entity_type": "monetary",
+"aggregations": ["sum", "avg", "min", "max"]
+},
+
+"order_reviews.review_score": {
+"description": "Customer rating from 1 to 5",
+"aliases": [
+"rating",
+"stars",
+"customer score",
+"satisfaction score"
+],
+"entity_type": "rating",
+"aggregations": ["avg", "min", "max"]
+},
+
+"order_reviews.review_comment_title": {
+"description": "Review headline",
+"aliases": [
+"review title",
+"feedback title",
+"comment title"
+],
+"entity_type": "text"
+},
+
+"order_reviews.review_comment_message": {
+"description": "Customer review text",
+"aliases": [
+"review",
+"feedback",
+"comment",
+"customer opinion"
+],
+"entity_type": "text"
+},
+
+"products.product_id": {
+"description": "Unique product identifier",
+"aliases": ["product", "item", "sku"],
+"entity_type": "identifier"
+},
+
+"products.product_category_name": {
+"description": "Product category in Portuguese",
+"aliases": [
+"category",
+"product category",
+"item category"
+],
+"entity_type": "categorical",
+"business_concepts": ["catalog"]
+},
+
+"products.product_weight_g": {
+"description": "Weight of the product in grams",
+"aliases": [
+"weight",
+"item weight",
+"product weight"
+],
+"entity_type": "measurement"
+},
+
+"products.product_length_cm": {
+"description": "Length of the product",
+"aliases": ["length", "product length"],
+"entity_type": "measurement"
+},
+
+"products.product_height_cm": {
+"description": "Height of the product",
+"aliases": ["height", "product height"],
+"entity_type": "measurement"
+},
+
+"products.product_width_cm": {
+"description": "Width of the product",
+"aliases": ["width", "product width"],
+"entity_type": "measurement"
+},
+
+"sellers.seller_id": {
+"description": "Unique seller identifier",
+"aliases": [
+"seller",
+"merchant",
+"vendor",
+"store"
+],
+"entity_type": "identifier"
+},
+
+"sellers.seller_city": {
+"description": "Seller city",
+"aliases": [
+"merchant city",
+"vendor city",
+"seller location"
+],
+"entity_type": "location"
+},
+
+"sellers.seller_state": {
+"description": "Seller state",
+"aliases": [
+"merchant state",
+"vendor state",
+"seller region"
+],
+"entity_type": "location"
+},
+
+"product_category_name_translation.product_category_name_english": {
+"description": "English name of product category",
+"aliases": [
+"english category",
+"translated category",
+"product category english"
+],
+"entity_type": "categorical"
+}
+}

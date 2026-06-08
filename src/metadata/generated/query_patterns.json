@@ -1,0 +1,445 @@
+{
+  "patterns": [
+    {
+      "intent": "total_sales",
+      "examples": [
+        "What is the total revenue?",
+        "How much revenue did we generate?",
+        "What are total sales?"
+      ],
+      "tables": ["order_items"],
+      "metrics": ["total_revenue"]
+    },
+
+    {
+      "intent": "monthly_sales_trend",
+      "examples": [
+        "Show monthly sales trend",
+        "Revenue by month",
+        "How have sales changed over time?",
+        "Monthly revenue analysis"
+      ],
+      "tables": ["orders", "order_items"],
+      "metrics": ["total_revenue"]
+    },
+
+    {
+      "intent": "daily_sales_trend",
+      "examples": [
+        "Daily revenue",
+        "Sales by day",
+        "Daily sales trend"
+      ],
+      "tables": ["orders", "order_items"],
+      "metrics": ["total_revenue"]
+    },
+
+    {
+      "intent": "top_selling_products",
+      "examples": [
+        "Top selling products",
+        "Best selling products",
+        "Most purchased products",
+        "Highest selling items"
+      ],
+      "tables": ["order_items", "products"],
+      "metrics": ["total_products_sold"]
+    },
+
+    {
+      "intent": "worst_selling_products",
+      "examples": [
+        "Least selling products",
+        "Worst selling products",
+        "Products with lowest sales"
+      ],
+      "tables": ["order_items", "products"]
+    },
+
+    {
+      "intent": "revenue_by_product",
+      "examples": [
+        "Revenue by product",
+        "Product sales revenue",
+        "Which products generate the most revenue?"
+      ],
+      "tables": ["order_items", "products"],
+      "metrics": ["total_revenue"]
+    },
+
+    {
+      "intent": "revenue_by_category",
+      "examples": [
+        "Revenue by category",
+        "Which categories generate the most sales?",
+        "Top categories by revenue"
+      ],
+      "tables": [
+        "order_items",
+        "products",
+        "product_category_name_translation"
+      ],
+      "metrics": ["total_revenue"]
+    },
+
+    {
+      "intent": "top_categories",
+      "examples": [
+        "Most popular categories",
+        "Top product categories",
+        "Best selling categories"
+      ],
+      "tables": [
+        "order_items",
+        "products",
+        "product_category_name_translation"
+      ]
+    },
+
+    {
+      "intent": "category_performance",
+      "examples": [
+        "Category performance analysis",
+        "Compare product categories",
+        "Category sales and ratings"
+      ],
+      "tables": [
+        "products",
+        "order_items",
+        "order_reviews"
+      ]
+    },
+
+    {
+      "intent": "seller_revenue",
+      "examples": [
+        "Revenue by seller",
+        "Top sellers by revenue",
+        "Seller sales performance"
+      ],
+      "tables": [
+        "order_items",
+        "sellers"
+      ],
+      "metrics": ["total_revenue"]
+    },
+
+    {
+      "intent": "top_sellers",
+      "examples": [
+        "Best performing sellers",
+        "Top merchants",
+        "Highest revenue sellers"
+      ],
+      "tables": [
+        "order_items",
+        "sellers"
+      ]
+    },
+
+    {
+      "intent": "seller_ratings",
+      "examples": [
+        "Seller ratings",
+        "Best rated sellers",
+        "Which sellers have the highest reviews?"
+      ],
+      "tables": [
+        "order_items",
+        "sellers",
+        "order_reviews"
+      ],
+      "metrics": ["average_review_score"]
+    },
+
+    {
+      "intent": "customer_count",
+      "examples": [
+        "How many customers do we have?",
+        "Total customers",
+        "Unique customer count"
+      ],
+      "tables": ["customers"],
+      "metrics": ["total_customers"]
+    },
+
+    {
+      "intent": "repeat_customers",
+      "examples": [
+        "Repeat customers",
+        "Returning customers",
+        "Customers with multiple orders"
+      ],
+      "tables": [
+        "customers",
+        "orders"
+      ]
+    },
+
+    {
+      "intent": "customer_lifetime_value",
+      "examples": [
+        "Customer lifetime value",
+        "Highest value customers",
+        "Top customers by spending"
+      ],
+      "tables": [
+        "customers",
+        "orders",
+        "order_items"
+      ]
+    },
+
+    {
+      "intent": "average_order_value",
+      "examples": [
+        "Average order value",
+        "AOV",
+        "Average basket size"
+      ],
+      "tables": [
+        "orders",
+        "order_items"
+      ],
+      "metrics": ["average_order_value"]
+    },
+
+    {
+      "intent": "order_volume",
+      "examples": [
+        "Total orders",
+        "Order count",
+        "Number of purchases"
+      ],
+      "tables": ["orders"],
+      "metrics": ["total_orders"]
+    },
+
+    {
+      "intent": "order_status_distribution",
+      "examples": [
+        "Order status breakdown",
+        "Orders by status",
+        "Delivered vs cancelled orders"
+      ],
+      "tables": ["orders"]
+    },
+
+    {
+      "intent": "cancelled_orders",
+      "examples": [
+        "Cancelled orders",
+        "How many orders were cancelled?",
+        "Cancellation analysis"
+      ],
+      "tables": ["orders"]
+    },
+
+    {
+      "intent": "delivery_performance",
+      "examples": [
+        "Delivery performance",
+        "Shipping performance",
+        "Average delivery time"
+      ],
+      "tables": ["orders"]
+    },
+
+    {
+      "intent": "late_deliveries",
+      "examples": [
+        "Late deliveries",
+        "Orders delivered after estimated date",
+        "Delayed shipments"
+      ],
+      "tables": ["orders"]
+    },
+
+    {
+      "intent": "delivery_time_by_state",
+      "examples": [
+        "Average delivery time by state",
+        "Shipping speed by state",
+        "State-wise delivery performance"
+      ],
+      "tables": [
+        "orders",
+        "customers"
+      ]
+    },
+
+    {
+      "intent": "customer_satisfaction",
+      "examples": [
+        "Average customer rating",
+        "Customer satisfaction score",
+        "Review analysis"
+      ],
+      "tables": ["order_reviews"],
+      "metrics": ["average_review_score"]
+    },
+
+    {
+      "intent": "negative_reviews",
+      "examples": [
+        "Low rated reviews",
+        "Negative customer feedback",
+        "Poor reviews"
+      ],
+      "tables": ["order_reviews"]
+    },
+
+    {
+      "intent": "positive_reviews",
+      "examples": [
+        "Five star reviews",
+        "Positive customer feedback",
+        "Best reviews"
+      ],
+      "tables": ["order_reviews"]
+    },
+
+    {
+      "intent": "reviews_by_category",
+      "examples": [
+        "Average rating by category",
+        "Best rated categories",
+        "Worst rated categories"
+      ],
+      "tables": [
+        "products",
+        "order_items",
+        "order_reviews"
+      ]
+    },
+
+    {
+      "intent": "payment_methods",
+      "examples": [
+        "Payment method distribution",
+        "Most popular payment methods",
+        "Payment type analysis"
+      ],
+      "tables": ["order_payments"]
+    },
+
+    {
+      "intent": "installment_analysis",
+      "examples": [
+        "Installment usage",
+        "Average installments",
+        "Customers paying in installments"
+      ],
+      "tables": ["order_payments"]
+    },
+
+    {
+      "intent": "revenue_by_city",
+      "examples": [
+        "Revenue by city",
+        "Top cities by sales",
+        "City sales ranking"
+      ],
+      "tables": [
+        "customers",
+        "orders",
+        "order_items"
+      ]
+    },
+
+    {
+      "intent": "revenue_by_state",
+      "examples": [
+        "Revenue by state",
+        "Top states by sales",
+        "State revenue comparison"
+      ],
+      "tables": [
+        "customers",
+        "orders",
+        "order_items"
+      ]
+    },
+
+    {
+      "intent": "customer_geography",
+      "examples": [
+        "Customer distribution by state",
+        "Where are customers located?",
+        "Customer geography"
+      ],
+      "tables": ["customers"]
+    },
+
+    {
+      "intent": "seller_geography",
+      "examples": [
+        "Seller distribution by state",
+        "Where are sellers located?",
+        "Seller geography"
+      ],
+      "tables": ["sellers"]
+    },
+
+    {
+      "intent": "freight_analysis",
+      "examples": [
+        "Shipping cost analysis",
+        "Freight costs",
+        "Average freight by category"
+      ],
+      "tables": [
+        "order_items",
+        "products"
+      ],
+      "metrics": ["total_freight"]
+    },
+
+    {
+      "intent": "product_dimensions",
+      "examples": [
+        "Largest products",
+        "Heaviest products",
+        "Products by weight"
+      ],
+      "tables": ["products"]
+    },
+
+    {
+      "intent": "lead_conversion",
+      "examples": [
+        "Lead conversion rate",
+        "Qualified vs closed leads",
+        "Marketing lead performance"
+      ],
+      "tables": [
+        "leads_qualified",
+        "leads_closed"
+      ]
+    },
+
+    {
+      "intent": "lead_source_analysis",
+      "examples": [
+        "Best lead sources",
+        "Lead origin performance",
+        "Marketing channel effectiveness"
+      ],
+      "tables": [
+        "leads_qualified"
+      ]
+    },
+
+    {
+      "intent": "business_segment_analysis",
+      "examples": [
+        "Performance by business segment",
+        "Business segment comparison",
+        "Revenue by segment"
+      ],
+      "tables": [
+        "leads_closed"
+      ]
+    }
+  ]
+}
