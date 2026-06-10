@@ -13,7 +13,6 @@ from src.planner.planner import (
 
 st.set_page_config(
     page_title="Text2SQL Planner",
-    page_icon="🧠",
     layout="wide",
 )
 
@@ -31,7 +30,7 @@ except Exception as e:
 # UI
 # --------------------------------------------------
 
-st.title("🧠 Text2SQL Planner")
+st.title("Text2SQL Planner")
 
 question = st.text_area(
     "Business Question",
@@ -51,7 +50,7 @@ if show_metadata:
         )
 
 if st.button(
-    "Generate Query Plan",
+    "Generate Query",
     use_container_width=True,
 ):
     if not question.strip():
@@ -59,10 +58,10 @@ if st.button(
         st.stop()
 
     try:
-        with st.spinner("Generating plan..."):
+        with st.spinner("Generating Query..."):
             plan = plan_query(question)
 
-        st.success("Plan generated")
+        st.success("Query generated")
 
         st.subheader("Query")
         st.code(plan)
