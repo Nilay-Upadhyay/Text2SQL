@@ -13,4 +13,6 @@ dependencies = [
     "python-dotenv>=1.2.2",
     "requests>=2.34.2",
     "sqlalchemy>=2.0.50",
+    "sqlparse>=0.5.5",
+    "streamlit>=1.58.0",
 ]

@@ -1,54 +1,44 @@
 import json
+import os
 from pathlib import Path
-
 import requests
 from dotenv import load_dotenv
-
-from src.planner.models import QueryPlan
+import sqlparse 
 from src.planner.metadata_loader import load_metadata
 from src.planner.prompts import PLANNER_PROMPT
 
 load_dotenv()
 
-
-OLLAMA_BASE_URL = "http://localhost:11434"
-OLLAMA_MODEL = None
+# Global variables for Groq configuration
+GROQ_API_KEY = None
+GROQ_MODEL = None
+GROQ_BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
 
 
 def load_config():
-    import os
+    global GROQ_API_KEY
+    global GROQ_MODEL
 
-    global OLLAMA_BASE_URL
-    global OLLAMA_MODEL
+    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+    GROQ_MODEL = os.getenv("GROQ_MODEL")
 
-    OLLAMA_BASE_URL = os.getenv(
-        "OLLAMA_BASE_URL",
-        "http://localhost:11434",
-    )
-
-    OLLAMA_MODEL = os.getenv("OLLAMA_MODEL")
-
-    if not OLLAMA_MODEL:
-        raise ValueError(
-            "OLLAMA_MODEL not configured in .env"
-        )
+    if not GROQ_API_KEY:
+        raise ValueError("GROQ_API_KEY not configured in .env")
+    
+    if not GROQ_MODEL:
+        raise ValueError("GROQ_MODEL not configured in .env")
 
 
 def build_metadata_context() -> str:
-    metadata = load_metadata()
+    """Constructs the LLM prompt context using the raw file text."""
+    schema_text, biz_dict_text = load_metadata()
 
     return f"""
 SCHEMA:
-{json.dumps(metadata["schema"], indent=2)}
+{schema_text}
 
 BUSINESS_DICTIONARY:
-{json.dumps(metadata["business_dictionary"], indent=2)}
-
-JOIN_DICTIONARY:
-{json.dumps(metadata["joins"], indent=2)}
-
-QUERY_PATTERNS:
-{json.dumps(metadata["patterns"], indent=2)}
+{biz_dict_text}
 """
 
 
@@ -66,52 +56,100 @@ DATABASE METADATA:
 """
 
 
-def call_ollama(prompt: str) -> str:
+def extract_sql_query(response_text: str) -> str | None:
+    try:
+        payload = json.loads(response_text)
+    except json.JSONDecodeError:
+        return None
 
+    def walk(value):
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if key.lower() in {"query", "sql", "sql_query", "statement"} and isinstance(item, str):
+                    # Clean, format, and align the extracted SQL query string
+                    formatted_sql = sqlparse.format(
+                        item,
+                        reindent=True,
+                        keyword_case='upper',
+                        reindent_aligned=True,
+                        strip_comments=False
+                    )
+                    return formatted_sql
+                result = walk(item)
+                if result:
+                    return result
+        elif isinstance(value, list):
+            for item in value:
+                result = walk(item)
+                if result:
+                    return result
+        return None
+
+    return walk(payload)
+
+
+def call_groq(prompt: str) -> str:
+    """Calls the Groq API using standard requests, forcing a JSON object response."""
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    # Groq uses the ChatCompletions format and supports structured JSON outputs
     payload = {
-        "model": OLLAMA_MODEL,
-        "prompt": prompt,
-        "stream": False,
-        "format": "json",
+        "model": GROQ_MODEL,
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        # Forces the model to respond with a valid JSON object
+        "response_format": {"type": "json_object"},
+        "temperature": 0.2, 
+        "stream": False
     }
 
     response = requests.post(
-        f"{OLLAMA_BASE_URL}/api/generate",
+        GROQ_BASE_URL,
+        headers=headers,
         json=payload,
         timeout=120,
     )
+    # Add these lines right before raise_for_status() to see the real error
+    if response.status_code != 200:
+        print("Groq Error Response:", response.text)
 
     response.raise_for_status()
 
     data = response.json()
+    
+    # Extract text from standard OpenAI/Groq response format
+    return data["choices"][0]["message"]["content"]
 
-    return data["response"]
 
-
-def plan_query(question: str) -> QueryPlan:
-
+def plan_query(question: str) :
     prompt = f"""
 {PLANNER_PROMPT}
 
 {build_user_prompt(question)}
 """
 
-    response_text = call_ollama(prompt)
+    response_text = call_groq(prompt)
+    query = extract_sql_query(response_text)
 
-    return QueryPlan.model_validate_json(
-        response_text
-    )
+    return query
+
 
 
 if __name__ == "__main__":
-
     load_config()
 
     question = (
-        "Which sellers generated the highest revenue?"
+        "highest value customer"
     )
 
     plan = plan_query(question)
 
-    print("\nQUERY PLAN\n")
-    print(plan.model_dump_json(indent=2))
+    print("\nQUERY\n")
+    print(plan)

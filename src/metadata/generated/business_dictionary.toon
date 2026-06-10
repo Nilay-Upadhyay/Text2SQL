@@ -1,0 +1,153 @@
+customers.customer_id:
+  description: Unique identifier for a customer record
+  aliases[3]: customer,buyer,customer record
+  entity_type: identifier
+  business_concepts[1]: customer
+customers.customer_unique_id:
+  description: Persistent identifier representing the same customer across multiple orders
+  aliases[3]: unique customer,repeat customer,customer account
+  entity_type: identifier
+  business_concepts[2]: customer,retention
+customers.customer_zip_code_prefix:
+  description: Customer postal code prefix
+  aliases[4]: zipcode,zip code,postal code,customer zip
+  entity_type: location
+customers.customer_city:
+  description: Customer city
+  aliases[3]: city,customer city,buyer city
+  entity_type: location
+customers.customer_state:
+  description: Customer state
+  aliases[4]: state,region,province,customer state
+  entity_type: location
+orders.order_id:
+  description: Unique identifier for an order
+  aliases[3]: order,purchase,transaction
+  entity_type: identifier
+  business_concepts[2]: sales,orders
+orders.customer_id:
+  description: Customer who placed the order
+  aliases[3]: buyer,purchaser,customer
+  entity_type: foreign_key
+orders.order_status:
+  description: Current lifecycle state of the order
+  aliases[4]: status,order state,delivery status,fulfillment status
+  entity_type: categorical
+  business_concepts[2]: fulfillment,operations
+orders.order_purchase_timestamp:
+  description: Timestamp when customer placed the order
+  aliases[6]: purchase date,purchase time,order date,order time,transaction date,sale date
+  entity_type: datetime
+  business_concepts[3]: sales,revenue,orders
+orders.order_approved_at:
+  description: Timestamp when payment was approved
+  aliases[3]: approval date,payment approval date,approved time
+  entity_type: datetime
+  business_concepts[1]: payments
+orders.order_delivered_carrier_date:
+  description: Date when order was handed to carrier
+  aliases[3]: shipment date,carrier pickup date,dispatch date
+  entity_type: datetime
+  business_concepts[2]: shipping,logistics
+orders.order_delivered_customer_date:
+  description: Date when customer received the order
+  aliases[3]: delivery date,received date,delivered date
+  entity_type: datetime
+  business_concepts[2]: shipping,customer experience
+orders.order_estimated_delivery_date:
+  description: Promised delivery date
+  aliases[3]: estimated delivery,expected delivery,promised delivery
+  entity_type: datetime
+  business_concepts[2]: shipping,sla
+order_items.order_item_id:
+  description: Line item identifier within an order
+  aliases[2]: item number,line item
+  entity_type: identifier
+order_items.product_id:
+  description: Product purchased
+  aliases[3]: product,item,sku
+  entity_type: foreign_key
+  business_concepts[1]: catalog
+order_items.seller_id:
+  description: Seller fulfilling the item
+  aliases[3]: merchant,vendor,seller
+  entity_type: foreign_key
+  business_concepts[1]: marketplace
+order_items.price:
+  description: Sale price of the product excluding freight
+  aliases[5]: price,sales amount,item value,product revenue,selling price
+  entity_type: monetary
+  aggregations[4]: sum,avg,min,max
+order_items.freight_value:
+  description: Shipping charge associated with the item
+  aliases[4]: shipping cost,delivery fee,freight cost,shipping charge
+  entity_type: monetary
+  aggregations[2]: sum,avg
+order_payments.payment_type:
+  description: Method used to pay for the order
+  aliases[3]: payment method,payment channel,payment mode
+  entity_type: categorical
+  business_concepts[1]: payments
+order_payments.payment_installments:
+  description: Number of payment installments
+  aliases[3]: installments,emi,payment terms
+  entity_type: numeric
+order_payments.payment_value:
+  description: Amount paid for the order
+  aliases[4]: payment amount,paid amount,revenue,transaction value
+  entity_type: monetary
+  aggregations[4]: sum,avg,min,max
+order_reviews.review_score:
+  description: Customer rating from 1 to 5
+  aliases[4]: rating,stars,customer score,satisfaction score
+  entity_type: rating
+  aggregations[3]: avg,min,max
+order_reviews.review_comment_title:
+  description: Review headline
+  aliases[3]: review title,feedback title,comment title
+  entity_type: text
+order_reviews.review_comment_message:
+  description: Customer review text
+  aliases[4]: review,feedback,comment,customer opinion
+  entity_type: text
+products.product_id:
+  description: Unique product identifier
+  aliases[3]: product,item,sku
+  entity_type: identifier
+products.product_category_name:
+  description: Product category in Portuguese
+  aliases[3]: category,product category,item category
+  entity_type: categorical
+  business_concepts[1]: catalog
+products.product_weight_g:
+  description: Weight of the product in grams
+  aliases[3]: weight,item weight,product weight
+  entity_type: measurement
+products.product_length_cm:
+  description: Length of the product
+  aliases[2]: length,product length
+  entity_type: measurement
+products.product_height_cm:
+  description: Height of the product
+  aliases[2]: height,product height
+  entity_type: measurement
+products.product_width_cm:
+  description: Width of the product
+  aliases[2]: width,product width
+  entity_type: measurement
+sellers.seller_id:
+  description: Unique seller identifier
+  aliases[4]: seller,merchant,vendor,store
+  entity_type: identifier
+sellers.seller_city:
+  description: Seller city
+  aliases[3]: merchant city,vendor city,seller location
+  entity_type: location
+sellers.seller_state:
+  description: Seller state
+  aliases[3]: merchant state,vendor state,seller region
+  entity_type: location
+product_category_name_translation.product_category_name_english:
+  description: English name of product category
+  aliases[3]: english category,translated category,product category english
+  entity_type: categorical

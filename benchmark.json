@@ -1,0 +1,261 @@
+[
+  {
+    "id": 1,
+    "difficulty": "easy",
+    "question": "How many orders are in the dataset?"
+  },
+  {
+    "id": 2,
+    "difficulty": "easy",
+    "question": "How many unique customers are there?"
+  },
+  {
+    "id": 3,
+    "difficulty": "easy",
+    "question": "How many sellers are registered?"
+  },
+  {
+    "id": 4,
+    "difficulty": "easy",
+    "question": "What are the different order statuses?"
+  },
+  {
+    "id": 5,
+    "difficulty": "easy",
+    "question": "How many products are available?"
+  },
+
+  {
+    "id": 6,
+    "difficulty": "easy",
+    "question": "What is the average review score?"
+  },
+  {
+    "id": 7,
+    "difficulty": "easy",
+    "question": "What is the total payment value collected?"
+  },
+  {
+    "id": 8,
+    "difficulty": "easy",
+    "question": "What is the average payment value?"
+  },
+  {
+    "id": 9,
+    "difficulty": "easy",
+    "question": "How many orders were delivered?"
+  },
+  {
+    "id": 10,
+    "difficulty": "easy",
+    "question": "How many orders were cancelled?"
+  },
+
+  {
+    "id": 11,
+    "difficulty": "medium",
+    "question": "What are the top 10 cities by number of customers?"
+  },
+  {
+    "id": 12,
+    "difficulty": "medium",
+    "question": "What are the top 10 states by number of customers?"
+  },
+  {
+    "id": 13,
+    "difficulty": "medium",
+    "question": "Which payment methods are most commonly used?"
+  },
+  {
+    "id": 14,
+    "difficulty": "medium",
+    "question": "What is the average number of installments used per payment?"
+  },
+  {
+    "id": 15,
+    "difficulty": "medium",
+    "question": "Which sellers have the highest number of order items sold?"
+  },
+
+  {
+    "id": 16,
+    "difficulty": "medium",
+    "question": "What are the top 10 products by number of units sold?"
+  },
+  {
+    "id": 17,
+    "difficulty": "medium",
+    "question": "What are the top 10 product categories by number of items sold?"
+  },
+  {
+    "id": 18,
+    "difficulty": "medium",
+    "question": "What are the top 10 product categories by revenue?"
+  },
+  {
+    "id": 19,
+    "difficulty": "medium",
+    "question": "Which states generate the highest revenue?"
+  },
+  {
+    "id": 20,
+    "difficulty": "medium",
+    "question": "Which cities generate the highest revenue?"
+  },
+
+  {
+    "id": 21,
+    "difficulty": "medium",
+    "question": "What is the average order value?"
+  },
+  {
+    "id": 22,
+    "difficulty": "medium",
+    "question": "How many customers have placed more than one order?"
+  },
+  {
+    "id": 23,
+    "difficulty": "medium",
+    "question": "What percentage of orders are delivered?"
+  },
+  {
+    "id": 24,
+    "difficulty": "medium",
+    "question": "What percentage of orders are cancelled?"
+  },
+  {
+    "id": 25,
+    "difficulty": "medium",
+    "question": "Which sellers have the highest revenue?"
+  },
+
+  {
+    "id": 26,
+    "difficulty": "hard",
+    "question": "What is the average delivery time in days for delivered orders?"
+  },
+  {
+    "id": 27,
+    "difficulty": "hard",
+    "question": "Which states have the longest average delivery time?"
+  },
+  {
+    "id": 28,
+    "difficulty": "hard",
+    "question": "How many orders were delivered after the estimated delivery date?"
+  },
+  {
+    "id": 29,
+    "difficulty": "hard",
+    "question": "What percentage of delivered orders arrived late?"
+  },
+  {
+    "id": 30,
+    "difficulty": "hard",
+    "question": "Which sellers have the highest average review scores?"
+  },
+
+  {
+    "id": 31,
+    "difficulty": "hard",
+    "question": "Which sellers have both more than 100 orders and an average review score above 4?"
+  },
+  {
+    "id": 32,
+    "difficulty": "hard",
+    "question": "Which product categories have the highest average review score?"
+  },
+  {
+    "id": 33,
+    "difficulty": "hard",
+    "question": "Which product categories have the lowest average review score?"
+  },
+  {
+    "id": 34,
+    "difficulty": "hard",
+    "question": "What is the relationship between freight cost and review score by category?"
+  },
+  {
+    "id": 35,
+    "difficulty": "hard",
+    "question": "Which categories generate high revenue but have low customer satisfaction?"
+  },
+
+  {
+    "id": 36,
+    "difficulty": "hard",
+    "question": "What are the top 10 customers by total spending?"
+  },
+  {
+    "id": 37,
+    "difficulty": "hard",
+    "question": "What is the average lifetime value of customers?"
+  },
+  {
+    "id": 38,
+    "difficulty": "hard",
+    "question": "Which customers have spent more than twice the average customer spend?"
+  },
+  {
+    "id": 39,
+    "difficulty": "hard",
+    "question": "What is the retention rate of customers who placed more than one order?"
+  },
+  {
+    "id": 40,
+    "difficulty": "hard",
+    "question": "Which states have the highest customer retention rate?"
+  },
+
+  {
+    "id": 41,
+    "difficulty": "expert",
+    "question": "For each month, what were the top 3 product categories by revenue?"
+  },
+  {
+    "id": 42,
+    "difficulty": "expert",
+    "question": "Which sellers consistently ranked in the top 10 by monthly revenue?"
+  },
+  {
+    "id": 43,
+    "difficulty": "expert",
+    "question": "Identify product categories whose revenue grew month-over-month for at least three consecutive months."
+  },
+  {
+    "id": 44,
+    "difficulty": "expert",
+    "question": "Which sellers have above-average revenue and above-average review scores?"
+  },
+  {
+    "id": 45,
+    "difficulty": "expert",
+    "question": "Which product categories have the highest revenue per seller?"
+  },
+
+  {
+    "id": 46,
+    "difficulty": "expert",
+    "question": "What is the average delay between purchase and delivery by state?"
+  },
+  {
+    "id": 47,
+    "difficulty": "expert",
+    "question": "Which payment methods are associated with the highest average order value?"
+  },
+  {
+    "id": 48,
+    "difficulty": "expert",
+    "question": "Which customer cities generate the highest revenue per customer?"
+  },
+  {
+    "id": 49,
+    "difficulty": "expert",
+    "question": "Among product categories with at least 1000 sales, which have the best customer ratings?"
+  },
+  {
+    "id": 50,
+    "difficulty": "expert",
+    "question": "Compare monthly revenue, average review score, and average delivery time in a single report."
+  }
+]
