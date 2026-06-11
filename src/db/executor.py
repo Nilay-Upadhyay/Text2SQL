@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
 
+from src.db.validator import validate_sql_query
+
 ROOT = Path(__file__).resolve().parents[2]
 load_dotenv(dotenv_path=ROOT / ".env")
 
@@ -41,6 +43,8 @@ def get_engine() -> Engine:
 
 def execute_sql_query(sql: str, max_rows: int = 500) -> pd.DataFrame:
     """Execute a SQL query against the configured Postgres database."""
+    validate_sql_query(sql)
+
     engine = get_engine()
     df = pd.read_sql_query(sql, engine)
     if max_rows is not None and len(df) > max_rows:
