@@ -71,7 +71,7 @@ class VectorRetriever:
     def __init__(
         self,
         embedding_manager: Optional[EmbeddingManager] = None,
-        embedding_dimension: int = 768,
+        embedding_dimension: int = 1024,
         similarity_threshold: float = 0.3,
         top_k: int = 5,
     ):
