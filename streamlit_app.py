@@ -1,4 +1,5 @@
 import streamlit as st
+import json
 from src.db.executor import execute_sql_query
 from src.planner.planner import (
     build_metadata_context,
@@ -44,8 +45,9 @@ show_metadata = st.checkbox(
 
 if show_metadata:
     with st.expander("Metadata"):
+        metadata_context, _ = build_metadata_context(question)
         st.code(
-            build_metadata_context(),
+            metadata_context,
             language=None,
         )
 
@@ -59,15 +61,21 @@ if st.button(
 
     try:
         with st.spinner("Generating Query..."):
-            plan = plan_query(question)
+            plan, retrieval_metadata = plan_query(question)
 
         st.success("Query generated")
 
-        st.subheader("Query")
-        st.code(plan)
+        # Show retrieval metadata if dynamic schema was used
+        if retrieval_metadata.get("method") != "full":
+            st.info(f"🔍 Schema Retrieval: {retrieval_metadata.get('method', 'unknown').upper()} | "
+                   f"Confidence: {retrieval_metadata.get('confidence', 0):.2%} | "
+                   f"Tables: {len(retrieval_metadata.get('tables_selected', []))}")
 
+        st.subheader("Query")
+        st.code(plan, language="sql")
 
         try:
+            if plan:
                 df = execute_sql_query(plan)
                 if df.empty:
                     st.info("The SQL query returned no rows.")
@@ -77,13 +85,17 @@ if st.button(
 
                     if len(df) > 200:
                         st.caption(f"Showing first {min(len(df), 200)} rows.")
+            else:
+                st.error("Failed to extract SQL query from model response")
         except Exception as exec_error:
-                st.error(f"Query execution failed: {exec_error}")
+            st.error(f"Query execution failed: {exec_error}")
 
         with st.expander("Prompt Preview"):
-            st.text(
-                build_user_prompt(question)
-            )
+            user_prompt, _ = build_user_prompt(question)
+            st.text(user_prompt)
+
+        with st.expander("Retrieval Metadata"):
+            st.json(retrieval_metadata)
 
     except Exception as e:
         st.exception(e)

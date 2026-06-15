@@ -1,23 +1,38 @@
 import json
+import logging
 import os
 from pathlib import Path
 import requests
 from dotenv import load_dotenv
 import sqlparse 
-from src.planner.metadata_loader import load_metadata
-from src.planner.prompts import PLANNER_PROMPT
+from src.planner.metadata_loader import (
+    filter_business_dictionary,
+    load_metadata,
+    load_metadata_dict,
+)
+from src.planner.prompts import PLANNER_PROMPT, get_dynamic_schema_prompt
+from src.metadata.embedding_manager import EmbeddingManager
+from src.metadata.vector_retriever import VectorRetriever
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 # Global variables for Groq configuration
 GROQ_API_KEY = None
 GROQ_MODEL = None
 GROQ_BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
 
+# Vector retriever for dynamic schema retrieval
+VECTOR_RETRIEVER = None
+USE_DYNAMIC_SCHEMA = os.getenv("USE_DYNAMIC_SCHEMA", "true").lower() == "true"
+SCHEMA_CONFIDENCE_THRESHOLD = float(os.getenv("SCHEMA_CONFIDENCE_THRESHOLD", "0.2"))
+
 
 def load_config():
     global GROQ_API_KEY
     global GROQ_MODEL
+    global VECTOR_RETRIEVER
 
     GROQ_API_KEY = os.getenv("GROQ_API_KEY")
     GROQ_MODEL = os.getenv("GROQ_MODEL")
@@ -28,22 +43,113 @@ def load_config():
     if not GROQ_MODEL:
         raise ValueError("GROQ_MODEL not configured in .env")
 
+    # Initialize vector retriever if dynamic schema is enabled
+    if USE_DYNAMIC_SCHEMA:
+        try:
+            logger.info("Initializing dynamic schema retriever...")
+            embedding_manager = EmbeddingManager()
+            VECTOR_RETRIEVER = VectorRetriever(
+                embedding_manager=embedding_manager,
+                similarity_threshold=SCHEMA_CONFIDENCE_THRESHOLD,
+                top_k=10,
+            )
+            logger.info("Dynamic schema retriever initialized")
+        except Exception as e:
+            logger.warning(f"Failed to initialize vector retriever: {e}. Falling back to full schema.")
+            VECTOR_RETRIEVER = None
 
-def build_metadata_context() -> str:
-    """Constructs the LLM prompt context using the raw file text."""
-    schema_text, biz_dict_text = load_metadata()
 
-    return f"""
+def build_metadata_context(question: str = "") -> tuple[str, dict]:
+    """Constructs the LLM prompt context using dynamic schema retrieval or full schema.
+    
+    Args:
+        question: User question for vector-based schema retrieval
+        
+    Returns:
+        Tuple of (metadata_context_text, retrieval_metadata)
+    """
+    retrieval_metadata = {
+        "method": "full",
+        "confidence": 1.0,
+        "tables_selected": [],
+        "retrieved_count": 0,
+    }
+
+    # Try to use dynamic schema if enabled and retriever is available
+    if USE_DYNAMIC_SCHEMA and VECTOR_RETRIEVER and question:
+        try:
+            # Retrieve relevant schema based on question
+            retrieved = VECTOR_RETRIEVER.retrieve_relevant_schema(
+                question, 
+                top_k=10,
+                confidence_threshold=SCHEMA_CONFIDENCE_THRESHOLD
+            )
+
+            retrieval_metadata.update(
+                {
+                    "method": "dynamic" if not retrieved.get("fallback") else "fallback",
+                    "confidence": retrieved.get("confidence", 0.0),
+                    "tables_selected": retrieved.get("tables", []),
+                    "retrieved_count": retrieved.get("result_count", 0),
+                }
+            )
+
+            # If confidence is too low, fall back to full schema
+            if retrieved.get("confidence", 0.0) < SCHEMA_CONFIDENCE_THRESHOLD * 2:
+                logger.warning(
+                    f"Low confidence retrieval ({retrieved.get('confidence', 0.0):.2f}), "
+                    f"falling back to broader schema"
+                )
+                retrieval_metadata["method"] = "fallback"
+                schema_text, biz_dict_text = load_metadata()
+            else:
+                full_schema_dict, full_biz_dict = load_metadata_dict()
+
+                expanded_schema = VECTOR_RETRIEVER.expand_retrieved_schema(
+                    retrieved, full_schema_dict
+                )
+                schema_text = json.dumps(expanded_schema, indent=2)
+
+                filtered_biz = filter_business_dictionary(
+                    full_biz_dict, retrieved.get("tables", [])
+                )
+                biz_dict_text = json.dumps(filtered_biz, indent=2)
+
+            metadata_context = f"""
 SCHEMA:
 {schema_text}
 
 BUSINESS_DICTIONARY:
 {biz_dict_text}
 """
+            return metadata_context, retrieval_metadata
+
+        except Exception as e:
+            logger.warning(f"Error in dynamic schema retrieval: {e}. Using full schema.")
+            retrieval_metadata["method"] = "error_fallback"
+
+    # Fall back to full schema
+    schema_text, biz_dict_text = load_metadata()
+    metadata_context = f"""
+SCHEMA:
+{schema_text}
+
+BUSINESS_DICTIONARY:
+{biz_dict_text}
+"""
+    return metadata_context, retrieval_metadata
 
 
-def build_user_prompt(question: str) -> str:
-    metadata_context = build_metadata_context()
+def build_user_prompt(question: str) -> tuple[str, dict]:
+    """Build the user prompt with metadata context.
+    
+    Args:
+        question: User question
+        
+    Returns:
+        Tuple of (prompt_text, retrieval_metadata)
+    """
+    metadata_context, retrieval_metadata = build_metadata_context(question)
 
     return f"""
 USER QUESTION:
@@ -53,7 +159,7 @@ USER QUESTION:
 DATABASE METADATA:
 
 {metadata_context}
-"""
+""", retrieval_metadata
 
 
 def extract_sql_query(response_text: str) -> str | None:
@@ -128,17 +234,27 @@ def call_groq(prompt: str) -> str:
     return data["choices"][0]["message"]["content"]
 
 
-def plan_query(question: str) :
+def plan_query(question: str) -> tuple[str | None, dict]:
+    """Plan a SQL query from a natural language question.
+    
+    Args:
+        question: User question
+        
+    Returns:
+        Tuple of (sql_query, metadata)
+    """
+    user_prompt, retrieval_metadata = build_user_prompt(question)
+    
     prompt = f"""
 {PLANNER_PROMPT}
 
-{build_user_prompt(question)}
+{user_prompt}
 """
 
     response_text = call_groq(prompt)
     query = extract_sql_query(response_text)
 
-    return query
+    return query, retrieval_metadata
 
 
 
@@ -149,7 +265,9 @@ if __name__ == "__main__":
         "highest value customer"
     )
 
-    plan = plan_query(question)
+    plan, metadata = plan_query(question)
 
     print("\nQUERY\n")
     print(plan)
+    print("\nRETRIEVAL METADATA\n")
+    print(json.dumps(metadata, indent=2))

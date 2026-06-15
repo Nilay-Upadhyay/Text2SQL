@@ -15,4 +15,8 @@ dependencies = [
     "sqlalchemy>=2.0.50",
     "sqlparse>=0.5.5",
     "streamlit>=1.58.0",
+    "pgvector>=0.2.1",
+    "torch>=2.12.0",
+    "transformers>=5.12.0",
+    "torchvision>=0.27.0",
 ]
