@@ -1,0 +1,26 @@
+definition user {
+  relation roles: role
+}
+
+definition role {
+  relation databases: database
+  relation tables: table
+  relation columns: column
+  relation business_terms: business_term
+}
+
+definition database {
+  relation member: role
+}
+
+definition table {
+  relation member: role
+}
+
+definition column {
+  relation member: role
+}
+
+definition business_term {
+  relation member: role
+}

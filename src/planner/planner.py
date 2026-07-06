@@ -11,6 +11,16 @@ from src.planner.metadata_loader import (
     load_metadata_dict,
 )
 from src.planner.prompts import PLANNER_PROMPT, get_dynamic_schema_prompt
+from src.authorization.metadata_filter import (
+    filter_business_metadata,
+    filter_schema_metadata,
+)
+from src.authorization.permission_service import (
+    AccessDeniedError,
+    get_authorized_metadata,
+    format_authorized_metadata,
+    validate_sql_access,
+)
 from src.metadata.embedding_manager import EmbeddingManager
 from src.metadata.vector_retriever import VectorRetriever
 
@@ -59,30 +69,27 @@ def load_config():
             VECTOR_RETRIEVER = None
 
 
-def build_metadata_context(question: str = "") -> tuple[str, dict]:
-    """Constructs the LLM prompt context using dynamic schema retrieval or full schema.
-    
-    Args:
-        question: User question for vector-based schema retrieval
-        
-    Returns:
-        Tuple of (metadata_context_text, retrieval_metadata)
-    """
+def build_metadata_context(question: str = "", active_user: str | None = None) -> tuple[str, dict]:
+    """Constructs the LLM prompt context using authorized metadata."""
     retrieval_metadata = {
         "method": "full",
         "confidence": 1.0,
         "tables_selected": [],
         "retrieved_count": 0,
+        "authorized_user": active_user or "admin",
+        "authorized_tables": [],
     }
 
-    # Try to use dynamic schema if enabled and retriever is available
+    snapshot, authorized_schema, authorized_business = get_authorized_metadata(active_user)
+    retrieval_metadata["authorized_user"] = snapshot.get("user_id", active_user or "admin")
+    retrieval_metadata["authorized_tables"] = list(snapshot.get("allowed_tables", []))
+
     if USE_DYNAMIC_SCHEMA and VECTOR_RETRIEVER and question:
         try:
-            # Retrieve relevant schema based on question
             retrieved = VECTOR_RETRIEVER.retrieve_relevant_schema(
-                question, 
+                question,
                 top_k=10,
-                confidence_threshold=SCHEMA_CONFIDENCE_THRESHOLD
+                confidence_threshold=SCHEMA_CONFIDENCE_THRESHOLD,
             )
 
             retrieval_metadata.update(
@@ -94,42 +101,30 @@ def build_metadata_context(question: str = "") -> tuple[str, dict]:
                 }
             )
 
-            # If confidence is too low, fall back to full schema
             if retrieved.get("confidence", 0.0) < SCHEMA_CONFIDENCE_THRESHOLD * 2:
                 logger.warning(
                     f"Low confidence retrieval ({retrieved.get('confidence', 0.0):.2f}), "
                     f"falling back to broader schema"
                 )
                 retrieval_metadata["method"] = "fallback"
-                schema_text, biz_dict_text = load_metadata()
             else:
                 full_schema_dict, full_biz_dict = load_metadata_dict()
-
+                allowed_tables = set(snapshot.get("allowed_tables", []))
+                allowed_columns = {
+                    table_name: set(columns)
+                    for table_name, columns in snapshot.get("allowed_columns", {}).items()
+                }
                 expanded_schema = VECTOR_RETRIEVER.expand_retrieved_schema(
                     retrieved, full_schema_dict
                 )
-                schema_text = json.dumps(expanded_schema, indent=2)
-
-                filtered_biz = filter_business_dictionary(
-                    full_biz_dict, retrieved.get("tables", [])
-                )
-                biz_dict_text = json.dumps(filtered_biz, indent=2)
-
-            metadata_context = f"""
-SCHEMA:
-{schema_text}
-
-BUSINESS_DICTIONARY:
-{biz_dict_text}
-"""
-            return metadata_context, retrieval_metadata
+                authorized_schema = filter_schema_metadata(expanded_schema, allowed_tables, allowed_columns)
+                authorized_business = filter_business_metadata(full_biz_dict, allowed_tables, allowed_columns)
 
         except Exception as e:
-            logger.warning(f"Error in dynamic schema retrieval: {e}. Using full schema.")
+            logger.warning(f"Error in dynamic schema retrieval: {e}. Using authorized full schema.")
             retrieval_metadata["method"] = "error_fallback"
 
-    # Fall back to full schema
-    schema_text, biz_dict_text = load_metadata()
+    schema_text, biz_dict_text = format_authorized_metadata(authorized_schema, authorized_business)
     metadata_context = f"""
 SCHEMA:
 {schema_text}
@@ -140,7 +135,7 @@ BUSINESS_DICTIONARY:
     return metadata_context, retrieval_metadata
 
 
-def build_user_prompt(question: str) -> tuple[str, dict]:
+def build_user_prompt(question: str, active_user: str | None = None) -> tuple[str, dict]:
     """Build the user prompt with metadata context.
     
     Args:
@@ -149,7 +144,7 @@ def build_user_prompt(question: str) -> tuple[str, dict]:
     Returns:
         Tuple of (prompt_text, retrieval_metadata)
     """
-    metadata_context, retrieval_metadata = build_metadata_context(question)
+    metadata_context, retrieval_metadata = build_metadata_context(question, active_user)
 
     return f"""
 USER QUESTION:
@@ -234,16 +229,13 @@ def call_groq(prompt: str) -> str:
     return data["choices"][0]["message"]["content"]
 
 
-def plan_query(question: str) -> tuple[str | None, dict]:
-    """Plan a SQL query from a natural language question.
-    
-    Args:
-        question: User question
-        
-    Returns:
-        Tuple of (sql_query, metadata)
-    """
-    user_prompt, retrieval_metadata = build_user_prompt(question)
+def plan_query(question: str, active_user: str | None = None) -> tuple[str | None, dict]:
+    """Plan a SQL query from a natural language question."""
+    snapshot, _, _ = get_authorized_metadata(active_user)
+    if not snapshot.get("allowed_tables"):
+        raise AccessDeniedError("You do not have access to the requested data.")
+
+    user_prompt, retrieval_metadata = build_user_prompt(question, active_user)
     
     prompt = f"""
 {PLANNER_PROMPT}
@@ -253,6 +245,9 @@ def plan_query(question: str) -> tuple[str | None, dict]:
 
     response_text = call_groq(prompt)
     query = extract_sql_query(response_text)
+
+    if query:
+        validate_sql_access(query, active_user)
 
     return query, retrieval_metadata
 

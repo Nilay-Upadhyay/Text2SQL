@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 from src.db.executor import execute_sql_query
+from src.authorization.permission_service import AccessDeniedError
 from src.planner.planner import (
     build_metadata_context,
     build_user_prompt,
@@ -39,13 +40,19 @@ question = st.text_area(
     height=120,
 )
 
+active_user = st.selectbox(
+    "Active user",
+    ["admin", "sales_analyst", "finance_analyst", "customer_support"],
+    index=0,
+)
+
 show_metadata = st.checkbox(
     "Show Metadata Context"
 )
 
 if show_metadata:
     with st.expander("Metadata"):
-        metadata_context, _ = build_metadata_context(question)
+        metadata_context, _ = build_metadata_context(question, active_user)
         st.code(
             metadata_context,
             language=None,
@@ -61,7 +68,7 @@ if st.button(
 
     try:
         with st.spinner("Generating Query..."):
-            plan, retrieval_metadata = plan_query(question)
+            plan, retrieval_metadata = plan_query(question, active_user)
 
         st.success("Query generated")
 
@@ -91,11 +98,13 @@ if st.button(
             st.error(f"Query execution failed: {exec_error}")
 
         with st.expander("Prompt Preview"):
-            user_prompt, _ = build_user_prompt(question)
+            user_prompt, _ = build_user_prompt(question, active_user)
             st.text(user_prompt)
 
         with st.expander("Retrieval Metadata"):
             st.json(retrieval_metadata)
 
+    except AccessDeniedError as e:
+        st.error("You do not have access to the requested data.")
     except Exception as e:
         st.exception(e)
