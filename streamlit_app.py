@@ -2,6 +2,7 @@ import streamlit as st
 import json
 from src.db.executor import execute_sql_query
 from src.authorization.permission_service import AccessDeniedError
+from src.db.validator import validate_sql_query , SqlValidationError
 from src.planner.planner import (
     build_metadata_context,
     build_user_prompt,
@@ -69,7 +70,14 @@ if st.button(
     try:
         with st.spinner("Generating Query..."):
             plan, retrieval_metadata,response = plan_query(question, active_user)
-
+            
+        def check_plan_validity(sql_plan: str) -> bool:
+            try:
+                validate_sql_query(sql_plan)
+                return True
+            except SqlValidationError:
+                return False
+            
         if "INSUFFICIENT_AUTHORIZATION" in response:
             st.error("You do not have access to the requested data.")
             with st.expander("Model Response"):
@@ -78,6 +86,10 @@ if st.button(
                 user_prompt, _ = build_user_prompt(question, active_user)
                 st.text(user_prompt)
             # stop streamlit execution if access is denied
+            st.stop()
+        
+        elif check_plan_validity(plan) is False:
+            st.error("SQL query cannot be executed.")
             st.stop()
 
         elif 'OUT_OF_SCOPE' in response:
