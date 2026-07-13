@@ -113,20 +113,11 @@ pip install -e .
 
 # Configuration
 
-Create a `.env` file.
-
-```env
-GROQ_API_KEY=
-
-DATABASE_URL=
-
-USE_DYNAMIC_SCHEMA=true
-
-SPICEDB_ENDPOINT=
-SPICEDB_TOKEN=
-
-SCHEMA_CONFIDENCE_THRESHOLD=0.30
+```bash
+cp .env.example .env
 ```
+
+Edit .env with your keys.
 
 ---
 
