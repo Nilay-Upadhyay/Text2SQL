@@ -2,6 +2,34 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+"""""
+Admin
+   - Full access
+
+Sales Analyst
+   - Tables:
+     customers
+     orders
+     order_items
+     products
+     sellers
+   - No access to payments, reviews, geolocation
+
+Finance Analyst
+   - Tables:
+     customers
+     orders
+     payments
+     order_items
+   - No access to reviews and geolocation
+
+Customer Support
+   - Tables:
+     customers
+     orders
+     reviews
+   - No access to payments, sellers, geolocation
+"""""
 
 TABLE_ALIASES = {
     "payments": "order_payments",
@@ -33,18 +61,45 @@ ROLE_ACCESS = {
             "payments",
             "reviews",
         ],
+        "deny_columns": {},
     },
     "sales_analyst": {
         "tables": ["customers", "orders", "order_items", "products", "sellers"],
         "business_terms": ["customers", "orders", "order_items", "products", "sellers"],
+        "deny_columns": {
+            "customers": [
+                "customer_unique_id",
+                "customer_zip_code_prefix",
+            ],
+            "orders": [],
+            "order_items": ["price","freight_value"],
+            "products": [],
+            "sellers": [
+                "seller_zip_code_prefix",
+            ],
+        },
     },
     "finance_analyst": {
         "tables": ["customers", "orders", "order_items", "payments"],
         "business_terms": ["customers", "orders", "order_items", "payments"],
+        "deny_columns": {
+            "customers": ["customer_unique_id"],
+            "orders": [],
+            "order_items": [],
+            "payments": ['payment_type'],
+        },
     },
     "customer_support": {
         "tables": ["customers", "orders", "reviews"],
         "business_terms": ["customers", "orders", "reviews"],
+        "deny_columns": {
+            "customers": [
+                "customer_unique_id",
+                "customer_zip_code_prefix",
+            ],
+            "orders": [],
+            "reviews": [],
+        },
     },
 }
 
@@ -55,6 +110,7 @@ class SeedAccess:
     role: str
     tables: tuple[str, ...]
     business_terms: tuple[str, ...]
+    deny_columns: dict[str, tuple[str, ...]] = None
 
 
 def normalize_user_id(user_id: str | None) -> str:
@@ -77,6 +133,10 @@ def get_seed_access(user_id: str | None) -> SeedAccess:
         role=role,
         tables=tuple(access["tables"]),
         business_terms=tuple(access["business_terms"]),
+        deny_columns={
+            normalize_table_name(table): tuple(cols)
+            for table, cols in (access.get("deny_columns") or {}).items()
+        },
     )
 
 

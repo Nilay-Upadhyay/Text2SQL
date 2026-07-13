@@ -128,10 +128,9 @@ def build_metadata_context(question: str = "", active_user: str | None = None) -
     metadata_context = f"""
 SCHEMA:
 {schema_text}
-
-BUSINESS_DICTIONARY:
-{biz_dict_text}
 """
+# BUSINESS_DICTIONARY:
+# {biz_dict_text}
     return metadata_context, retrieval_metadata
 
 

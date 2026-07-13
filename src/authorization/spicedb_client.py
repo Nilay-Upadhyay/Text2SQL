@@ -26,7 +26,13 @@ class SpiceDBClient:
     def get_snapshot(self, user_id: str | None = None) -> AuthorizationSnapshot:
         access = get_seed_access(user_id)
         tables = tuple(normalize_table_name(table) for table in access.tables)
-        columns = {table: tuple(self._get_columns(table)) for table in tables}
+        # By default a table grant implies all columns. Apply deny column overrides
+        columns: dict[str, tuple[str, ...]] = {}
+        for table in tables:
+            all_cols = list(self._get_columns(table))
+            deny = tuple(access.deny_columns.get(table, ())) if access.deny_columns else ()
+            allowed = [c for c in all_cols if c not in deny]
+            columns[table] = tuple(allowed)
         return AuthorizationSnapshot(
             user_id=access.user_id,
             allowed_tables=tables,

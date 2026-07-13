@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 
 import sqlparse
+import logging
 
 from src.authorization.metadata_filter import filter_business_metadata, filter_schema_metadata
 from src.authorization.seed_relationships import normalize_table_name
@@ -46,7 +47,7 @@ def format_authorized_metadata(schema_dict: dict, business_dict: dict) -> tuple[
 def validate_sql_access(sql: str, user_id: str | None = None) -> None:
     if not sql or not sql.strip():
         return
-
+    logger = logging.getLogger(__name__)
     client = SpiceDBClient()
     snapshot = client.get_snapshot(get_active_user_id(user_id))
 
@@ -64,10 +65,13 @@ def validate_sql_access(sql: str, user_id: str | None = None) -> None:
         for table_name in table_aliases.values()
         if normalize_table_name(table_name) not in allowed_tables
     ]
-    unauthorized_columns = []
+    unauthorized_columns: list[str] = []
     for table_name, column_names in columns.items():
         canonical_table = normalize_table_name(table_name)
+        # If user has no explicit allowed columns for this table, but does have table access,
+        # they implicitly have access to all columns (handled by SpiceDBClient snapshot).
         if canonical_table not in allowed_columns:
+            # no allowed_columns entry -> treat as no access
             unauthorized_columns.extend(f"{table_name}.{column}" for column in column_names)
             continue
         for column_name in column_names:
@@ -75,9 +79,14 @@ def validate_sql_access(sql: str, user_id: str | None = None) -> None:
                 unauthorized_columns.append(f"{table_name}.{column_name}")
 
     if unauthorized_tables or unauthorized_columns:
-        raise AccessDeniedError(
-            "Access Denied: the generated SQL references unauthorized tables or columns."
-        )
+        summary = {
+            "user_id": get_active_user_id(user_id),
+            "unauthorized_tables": unauthorized_tables,
+            "unauthorized_columns": unauthorized_columns,
+            "allowed_tables": list(allowed_tables),
+        }
+        logger.warning("Unauthorized access attempt: %s", summary)
+        raise AccessDeniedError("You are not authorised")
 
 
 def get_table_aliases(sql: str) -> dict[str, str]:
