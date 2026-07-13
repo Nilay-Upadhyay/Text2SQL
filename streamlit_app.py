@@ -68,13 +68,33 @@ if st.button(
 
     try:
         with st.spinner("Generating Query..."):
-            plan, retrieval_metadata = plan_query(question, active_user)
+            plan, retrieval_metadata,response = plan_query(question, active_user)
 
-        st.success("Query generated")
+        if "INSUFFICIENT_AUTHORIZATION" in response:
+            st.error("You do not have access to the requested data.")
+            with st.expander("Model Response"):
+                st.text(response)
+            with st.expander("Prompt Preview"):
+                user_prompt, _ = build_user_prompt(question, active_user)
+                st.text(user_prompt)
+            # stop streamlit execution if access is denied
+            st.stop()
+
+        elif 'OUT_OF_SCOPE' in response:
+            st.error("The question is out of scope for the database.")
+            with st.expander("Model Response"):
+                st.text(response)
+            with st.expander("Prompt Preview"):
+                user_prompt, _ = build_user_prompt(question, active_user)
+                st.text(user_prompt)
+            # stop streamlit execution if access is denied
+            st.stop()
+        else:
+            st.success("Query generated")
 
         # Show retrieval metadata if dynamic schema was used
         if retrieval_metadata.get("method") != "full":
-            st.info(f"🔍 Schema Retrieval: {retrieval_metadata.get('method', 'unknown').upper()} | "
+            st.info(f"Schema Retrieval: {retrieval_metadata.get('method', 'unknown').upper()} | "
                    f"Confidence: {retrieval_metadata.get('confidence', 0):.2%} | "
                    f"Tables: {len(retrieval_metadata.get('tables_selected', []))}")
 
@@ -96,6 +116,9 @@ if st.button(
                 st.error("Failed to extract SQL query from model response")
         except Exception as exec_error:
             st.error(f"Query execution failed: {exec_error}")
+        
+        with st.expander("Model Response"):
+            st.text(response)
 
         with st.expander("Prompt Preview"):
             user_prompt, _ = build_user_prompt(question, active_user)

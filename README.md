@@ -1,145 +1,206 @@
-# Text2SQL
+# Enterprise Text2SQL Platform
 
-A lightweight Text-to-SQL planner built around a Groq-based LLM, Streamlit UI, and a PostgreSQL backend. The app converts natural language business questions into SQL queries using schema and business dictionary metadata, then validates and executes the generated SELECT statement safely.
+An enterprise-ready Text-to-SQL platform that converts natural language into secure PostgreSQL queries using LLMs, dynamic schema retrieval, and fine-grained authorization.
 
-## Key features
+The platform is designed for large enterprise databases where exposing the complete schema to an LLM is impractical or violates security requirements.
 
-- Generate SQL from business questions using metadata-driven prompt engineering
-- Load schema and business dictionary metadata from `src/metadata/generated/*.toon`
-- **🆕 Dynamic schema retrieval with PGVector**: Intelligently select only relevant tables/columns using vector similarity, reducing token usage by 40-70%
-- Enforce safe execution with a provider-side SQL validator that only allows single `SELECT` statements
-- Execute SQL through SQLAlchemy and return results as pandas data frames
-- Streamlit interface for interactive question input, query preview, and results display
-- Optional Docker Compose setup for PostgreSQL and pgAdmin
+---
 
-## Repository structure
+# Features
 
-- `streamlit_app.py` — main Streamlit application entry point
-- `src/planner/planner.py` — build prompts, call Groq, and extract SQL from model responses
-- `src/planner/prompts.py` — planner prompt template used by the LLM
-- `src/planner/metadata_loader.py` — loads schema and business dictionary metadata from `.toon` or `.json` files
-- `src/db/executor.py` — database connection and SQL execution layer
-- `src/db/validator.py` — SQL validation layer that blocks non-SELECT or multi-statement SQL
-- `src/metadata/generated/` — generated metadata assets used to instruct the planner
-- `src/metadata/embedding_manager.py` — **[NEW]** Groq-based embedding generation for vectors
-- `src/metadata/vector_retriever.py` — **[NEW]** PGVector-based schema retrieval with semantic search
-- `src/metadata/migrate_pgvector.py` — **[NEW]** Migration script to index schema into PGVector
-- `docker-compose.yml` — optional local PostgreSQL + pgAdmin service definitions
+- Natural language to PostgreSQL SQL generation
+- Dynamic schema retrieval using PGVector
+- Metadata-driven query planning
+- Business dictionary based semantic understanding
+- Fine-grained metadata authorization using SpiceDB
+- Secure SQL validation (SELECT only)
+- PostgreSQL execution layer
+- Streamlit web interface
+- Modular architecture for enterprise deployment
 
-### Documentation Files
-- `IMPLEMENTATION_SUMMARY.md` — complete implementation overview and architecture
-- `DYNAMIC_SCHEMA_README.md` — comprehensive guide to the dynamic schema feature
-- `SETUP_PGVECTOR.md` — step-by-step setup and troubleshooting guide
-- `QUICK_REFERENCE.md` — quick reference for common commands and configuration
-- `.env.example` — configuration template with all available options
-- `example_dynamic_schema.py` — example usage with sample queries
-- `validate_pgvector_setup.py` — validation script to verify setup
+---
 
-## Setup
+# Architecture
 
-1. Install PostgreSQL and PGVector extension
-
-```bash
-# macOS
-brew install postgresql pgvector
-
-# Linux
-sudo apt-get install postgresql postgresql-contrib
-# For pgvector, either:
-sudo apt-get install postgresql-<version>-pgvector
-# Or build from source: https://github.com/pgvector/pgvector
-
-# Docker
-docker compose up -d  # includes PostgreSQL (pgvector pre-installed in latest images)
+```
+                    User Question
+                          │
+                          ▼
+              Dynamic Schema Retrieval
+                     (PGVector)
+                          │
+                          ▼
+              Metadata Authorization
+                     (SpiceDB)
+                          │
+                          ▼
+              Authorized Metadata
+                          │
+                          ▼
+                   LLM Query Planner
+                          │
+        ┌─────────────────┴────────────────┐
+        │                                  │
+        ▼                                  ▼
+   SQL Generated           Insufficient Authorization /
+                                  Out Of Scope
+        │
+        ▼
+                SQL Validation
+        │
+        ▼
+               PostgreSQL Database
 ```
 
-2. Install Python dependencies
+---
 
-```bash
-python3 -m pip install -e .
+# Repository Structure
+
+```
+streamlit_app.py                Streamlit application
+
+src/
+├── authorization/              SpiceDB integration
+├── db/                         Database execution and validation
+├── metadata/                   Metadata management and PGVector retrieval
+├── planner/                    Prompt generation and LLM planning
+
+docker-compose.yml
+README.md
 ```
 
-> Or install individually:
+---
+
+# Core Components
+
+| Component | Responsibility |
+|------------|---------------|
+| PGVector | Dynamic schema retrieval |
+| Metadata Loader | Loads schema and business metadata |
+| SpiceDB | Metadata authorization |
+| Planner | SQL generation |
+| Validator | SQL safety validation |
+| Executor | Database execution |
+
+---
+
+# Prerequisites
+
+- Python 3.12+
+- PostgreSQL
+- PGVector Extension
+- SpiceDB
+- Groq API Key
+
+---
+
+# Installation
+
+Clone the repository
 
 ```bash
-python3 -m pip install python-dotenv pandas psycopg[binary] requests sqlalchemy sqlparse streamlit pgvector
+git clone <repository>
+cd text2sql
 ```
 
-3. Create a `.env` file in the repository root with the required settings:
+Install dependencies
+
+```bash
+pip install -e .
+```
+
+---
+
+# Configuration
+
+Create a `.env` file.
 
 ```env
-GROQ_API_KEY=your_groq_api_key
-GROQ_MODEL=mixtral-8x7b-32768
-DATABASE_URL=postgresql+psycopg://user:password@localhost:5432/database_name
+GROQ_API_KEY=
 
-# Optional: Dynamic schema retrieval (default: enabled)
+DATABASE_URL=
+
 USE_DYNAMIC_SCHEMA=true
-SCHEMA_CONFIDENCE_THRESHOLD=0.3
-GROQ_EMBEDDING_MODEL=mixtral-8x7b-32768
+
+SPICEDB_ENDPOINT=
+SPICEDB_TOKEN=
+
+SCHEMA_CONFIDENCE_THRESHOLD=0.30
 ```
 
-Alternatively, use `POSTGRES_*` variables if `DATABASE_URL` is not provided:
+---
 
-```env
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_USER=postgres
-POSTGRES_PASSWORD=secret
-POSTGRES_DB=text2sql
-```
+# Metadata Initialization
 
-4. **[NEW] Set up dynamic schema retrieval (optional but recommended)**
+Generate and index metadata.
 
 ```bash
-# Initialize PGVector indexes for faster retrieval
 python -m src.metadata.migrate_pgvector
-
-# Verify setup
-python validate_pgvector_setup.py
 ```
 
-See [SETUP_PGVECTOR.md](SETUP_PGVECTOR.md) for detailed instructions.
+Seed SpiceDB relationships.
 
-5. Start the Streamlit app
+```bash
+python -m src.authorization.seed_relationships
+```
+
+---
+
+# Running the Application
 
 ```bash
 streamlit run streamlit_app.py
 ```
 
-## Usage
+---
 
-- Open the Streamlit UI in your browser
-- Enter a business question in the text area
-- Click **Generate Query** to create SQL
-- The generated query is shown in the UI
-- The app executes the SQL and displays query results
+# Security Model
 
-## How it works
+The platform enforces multiple security layers.
 
-1. `streamlit_app.py` collects the user question and triggers `plan_query()`
-2. **[NEW] Dynamic Schema Retrieval (if enabled)**:
-   - User query is converted to a vector embedding using Groq API
-   - Vector similarity search finds relevant tables/columns in PGVector
-   - Confidence score determines if retrieved schema or full schema is used
-   - Only selected schema is passed to the LLM (40-70% token reduction)
-3. `src/planner/planner.py` constructs the prompt using (optionally filtered) metadata from `src/planner/metadata_loader.py`
-4. The planner sends the prompt to the Groq API and extracts SQL from the model response
-5. Generated SQL is passed to `src/db/executor.py`
-6. `src/db/validator.py` validates that the SQL is a single `SELECT` statement
-7. If valid, SQL is executed against the configured database and results are displayed
+- Dynamic metadata retrieval
+- Metadata authorization through SpiceDB
+- Prompt constrained to authorized metadata only
+- SQL validation
+- Read-only query execution
+- No SQL approximation for unauthorized metadata
 
-For more details on the dynamic schema feature, see [DYNAMIC_SCHEMA_README.md](DYNAMIC_SCHEMA_README.md)
+If the requested information cannot be generated from the authorized metadata, the planner returns:
 
-## Security
+- `INSUFFICIENT_AUTHORIZATION`
+- `OUT_OF_SCOPE`
 
-- The executor layer validates SQL before execution
-- Only one single statement is allowed
-- Only `SELECT` queries are permitted
-- This reduces the risk of SQL injection and malicious modifications
+No SQL is generated in these scenarios.
 
-## Development
+---
 
-- Modify prompt templates in `src/planner/prompts.py`
-- Add or update metadata in `src/metadata/generated/`
-- Extend validation rules in `src/db/validator.py`
-- Use `docker compose up -d` to start PostgreSQL and pgAdmin if desired
+# Development
+
+Key locations:
+
+```
+src/planner/
+src/metadata/
+src/authorization/
+src/db/
+```
+
+The system is designed so that retrieval, authorization, planning, validation, and execution remain independent modules.
+
+---
+
+# Technology Stack
+
+- Python
+- PostgreSQL
+- PGVector
+- SpiceDB
+- Groq LLM
+- SQLAlchemy
+- Streamlit
+
+---
+
+# License
+
+Internal Project

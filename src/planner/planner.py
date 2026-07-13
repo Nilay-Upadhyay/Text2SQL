@@ -242,13 +242,13 @@ def plan_query(question: str, active_user: str | None = None) -> tuple[str | Non
 {user_prompt}
 """
 
-    response_text = call_groq(prompt)
-    query = extract_sql_query(response_text)
+    response = call_groq(prompt)
+    query = extract_sql_query(response)
 
     if query:
         validate_sql_access(query, active_user)
 
-    return query, retrieval_metadata
+    return query, retrieval_metadata , response
 
 
 
@@ -259,7 +259,7 @@ if __name__ == "__main__":
         "highest value customer"
     )
 
-    plan, metadata = plan_query(question)
+    plan, metadata, response= plan_query(question)
 
     print("\nQUERY\n")
     print(plan)
