@@ -46,10 +46,10 @@ The platform is designed for large enterprise databases where exposing the compl
                                   Out Of Scope
         │
         ▼
-                SQL Validation
+   SQL Validation
         │
         ▼
-               PostgreSQL Database
+ PostgreSQL Database
 ```
 
 ---
@@ -138,6 +138,10 @@ python -m src.authorization.seed_relationships
 ---
 
 # Running the Application
+
+```bash
+docker compose up -d
+```
 
 ```bash
 streamlit run streamlit_app.py

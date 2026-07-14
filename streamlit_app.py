@@ -87,10 +87,6 @@ if st.button(
                 st.text(user_prompt)
             # stop streamlit execution if access is denied
             st.stop()
-        
-        elif check_plan_validity(plan) is False:
-            st.error("SQL query cannot be executed.")
-            st.stop()
 
         elif 'OUT_OF_SCOPE' in response:
             st.error("The question is out of scope for the database.")
@@ -101,6 +97,16 @@ if st.button(
                 st.text(user_prompt)
             # stop streamlit execution if access is denied
             st.stop()
+
+        elif check_plan_validity(plan) is False:
+            st.error("SQL query cannot be executed.")
+            with st.expander("Model Response"):
+                st.text(response)
+            with st.expander("Prompt Preview"):
+                user_prompt, _ = build_user_prompt(question, active_user)
+                st.text(user_prompt)
+            st.stop()
+            
         else:
             st.success("Query generated")
 

@@ -17,7 +17,7 @@ Finance Analyst
      orders
      payments
      order_items
-   - No access to reviews and geolocation
+   - No access to reviews, sellers, geolocation
 
 Customer Support
    - Tables:
