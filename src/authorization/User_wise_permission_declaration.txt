@@ -1,0 +1,28 @@
+"""""
+Admin
+   - Full access
+
+Sales Analyst
+   - Tables:
+     customers
+     orders
+     order_items
+     products
+     sellers
+   - No access to payments, reviews, geolocation
+
+Finance Analyst
+   - Tables:
+     customers
+     orders
+     payments
+     order_items
+   - No access to reviews and geolocation
+
+Customer Support
+   - Tables:
+     customers
+     orders
+     reviews
+   - No access to payments, sellers, geolocation
+"""""

@@ -2,34 +2,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-"""""
-Admin
-   - Full access
-
-Sales Analyst
-   - Tables:
-     customers
-     orders
-     order_items
-     products
-     sellers
-   - No access to payments, reviews, geolocation
-
-Finance Analyst
-   - Tables:
-     customers
-     orders
-     payments
-     order_items
-   - No access to reviews and geolocation
-
-Customer Support
-   - Tables:
-     customers
-     orders
-     reviews
-   - No access to payments, sellers, geolocation
-"""""
 
 TABLE_ALIASES = {
     "payments": "order_payments",
@@ -70,9 +42,11 @@ ROLE_ACCESS = {
             "customers": [
                 "customer_unique_id",
                 "customer_zip_code_prefix",
+                'customer_city',
+                'customer_state',
             ],
             "orders": [],
-            "order_items": ["price","freight_value"],
+            "order_items": [],
             "products": [],
             "sellers": [
                 "seller_zip_code_prefix",
@@ -83,10 +57,10 @@ ROLE_ACCESS = {
         "tables": ["customers", "orders", "order_items", "payments"],
         "business_terms": ["customers", "orders", "order_items", "payments"],
         "deny_columns": {
-            "customers": ["customer_unique_id"],
+            "customers": ["customer_unique_id",'customer_city', 'customer_state', 'customer_zip_code_prefix'],
             "orders": [],
             "order_items": [],
-            "payments": ['payment_type'],
+            "payments": [],
         },
     },
     "customer_support": {
@@ -96,6 +70,8 @@ ROLE_ACCESS = {
             "customers": [
                 "customer_unique_id",
                 "customer_zip_code_prefix",
+                'customer_city',
+                'customer_state',
             ],
             "orders": [],
             "reviews": [],
