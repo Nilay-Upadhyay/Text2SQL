@@ -19,7 +19,6 @@ from src.authorization.permission_service import (
     AccessDeniedError,
     get_authorized_metadata,
     format_authorized_metadata,
-    validate_sql_access,
 )
 from src.metadata.embedding_manager import EmbeddingManager
 from src.metadata.vector_retriever import VectorRetriever
@@ -245,10 +244,7 @@ def plan_query(question: str, active_user: str | None = None) -> tuple[str | Non
     response = call_groq(prompt)
     query = extract_sql_query(response)
 
-    if query:
-        validate_sql_access(query, active_user)
-
-    return query, retrieval_metadata , response
+    return query, retrieval_metadata, response
 
 
 

@@ -1,0 +1,883 @@
+[
+  {
+  "Comment" : "this still needs improvement take this as a reference only."
+  },
+  {
+    "id": 1,
+    "category": "Basic Aggregation",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "How many orders are in the dataset?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": ["order_id"],
+    "expected_business_terms": ["orders"],
+    "expected_sql": "SELECT COUNT(*) FROM orders;",
+    "notes": "Basic row count from orders table."
+  },
+  {
+    "id": 2,
+    "category": "Basic Aggregation",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "How many unique customers are there?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers"],
+    "expected_authorized_tables": ["customers"],
+    "expected_columns": ["customer_unique_id"],
+    "expected_business_terms": ["customer"],
+    "expected_sql": "SELECT COUNT(DISTINCT customer_unique_id) FROM customers;",
+    "notes": "Uses persistent customer identifier."
+  },
+  {
+    "id": 3,
+    "category": "Basic Aggregation",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "How many sellers are registered?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["sellers"],
+    "expected_authorized_tables": ["sellers"],
+    "expected_columns": ["seller_id"],
+    "expected_business_terms": ["marketplace"],
+    "expected_sql": "SELECT COUNT(*) FROM sellers;",
+    "notes": "Counts registered sellers."
+  },
+  {
+    "id": 4,
+    "category": "Basic Lookup",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "What are the different order statuses?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": ["order_status"],
+    "expected_business_terms": ["fulfillment", "operations"],
+    "expected_sql": "SELECT DISTINCT order_status FROM orders;",
+    "notes": "Returns unique order lifecycle states."
+  },
+  {
+    "id": 5,
+    "category": "Basic Aggregation",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "How many products are available?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["products"],
+    "expected_authorized_tables": ["products"],
+    "expected_columns": ["product_id"],
+    "expected_business_terms": ["catalog"],
+    "expected_sql": "SELECT COUNT(*) FROM products;",
+    "notes": "Counts products in catalog."
+  },
+  {
+    "id": 6,
+    "category": "Customer Satisfaction",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "What is the average review score?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_reviews"],
+    "expected_authorized_tables": ["order_reviews"],
+    "expected_columns": ["review_score"],
+    "expected_business_terms": ["review score"],
+    "expected_sql": "SELECT AVG(review_score) FROM order_reviews;",
+    "notes": "Average customer rating."
+  },
+  {
+    "id": 7,
+    "category": "Revenue Analytics",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "What is the total payment value collected?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_payments"],
+    "expected_authorized_tables": ["order_payments"],
+    "expected_columns": ["payment_value"],
+    "expected_business_terms": ["payments", "revenue"],
+    "expected_sql": "SELECT SUM(payment_value) FROM order_payments;",
+    "notes": "Revenue calculated using payment_value."
+  },
+  {
+    "id": 8,
+    "category": "Revenue Analytics",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "What is the average payment value?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_payments"],
+    "expected_authorized_tables": ["order_payments"],
+    "expected_columns": ["payment_value"],
+    "expected_business_terms": ["payments"],
+    "expected_sql": "SELECT AVG(payment_value) FROM order_payments;",
+    "notes": "Average payment amount."
+  },
+  {
+    "id": 9,
+    "category": "Order Analytics",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "How many orders were delivered?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": ["order_status"],
+    "expected_business_terms": ["fulfillment"],
+    "expected_sql": "SELECT COUNT(*) FROM orders WHERE order_status='delivered';",
+    "notes": "Delivered orders only."
+  },
+  {
+    "id": 10,
+    "category": "Order Analytics",
+    "difficulty": "easy",
+    "role": "admin",
+    "question": "How many orders were cancelled?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": ["order_status"],
+    "expected_business_terms": ["fulfillment"],
+    "expected_sql": "SELECT COUNT(*) FROM orders WHERE order_status='canceled';",
+    "notes": "Cancelled orders only."
+  },
+  {
+    "id": 11,
+    "category": "Customer Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What are the top 10 cities by number of customers?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers"],
+    "expected_authorized_tables": ["customers"],
+    "expected_columns": ["customer_city", "customer_id"],
+    "expected_business_terms": ["customer", "location"],
+    "expected_sql": "SELECT customer_city, COUNT(customer_id) AS customer_count FROM customers GROUP BY customer_city ORDER BY customer_count DESC LIMIT 10;",
+    "notes": "Ranks cities by registered customers."
+  },
+  {
+    "id": 12,
+    "category": "Customer Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What are the top 10 states by number of customers?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers"],
+    "expected_authorized_tables": ["customers"],
+    "expected_columns": ["customer_state", "customer_id"],
+    "expected_business_terms": ["customer", "location"],
+    "expected_sql": "SELECT customer_state, COUNT(customer_id) AS customer_count FROM customers GROUP BY customer_state ORDER BY customer_count DESC LIMIT 10;",
+    "notes": "Ranks states by customer count."
+  },
+  {
+    "id": 13,
+    "category": "Payment Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "Which payment methods are most commonly used?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_payments"],
+    "expected_authorized_tables": ["order_payments"],
+    "expected_columns": ["payment_type"],
+    "expected_business_terms": ["payment", "payment methods"],
+    "expected_sql": "SELECT payment_type, COUNT(*) AS usage_count FROM order_payments GROUP BY payment_type ORDER BY usage_count DESC;",
+    "notes": "Frequency of payment methods."
+  },
+  {
+    "id": 14,
+    "category": "Payment Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What is the average number of installments used per payment?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_payments"],
+    "expected_authorized_tables": ["order_payments"],
+    "expected_columns": ["payment_installments"],
+    "expected_business_terms": ["installments", "payment"],
+    "expected_sql": "SELECT AVG(payment_installments) FROM order_payments;",
+    "notes": "Average installment count."
+  },
+  {
+    "id": 15,
+    "category": "Seller Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "Which sellers have the highest number of order items sold?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_items"],
+    "expected_authorized_tables": ["order_items"],
+    "expected_columns": ["seller_id", "order_id"],
+    "expected_business_terms": ["seller", "sales"],
+    "expected_sql": "SELECT seller_id, COUNT(*) AS items_sold FROM order_items GROUP BY seller_id ORDER BY items_sold DESC;",
+    "notes": "Ranks sellers by total order items."
+  },
+  {
+    "id": 16,
+    "category": "Product Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What are the top 10 products by number of units sold?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_items", "products"],
+    "expected_authorized_tables": ["order_items", "products"],
+    "expected_columns": ["product_id"],
+    "expected_business_terms": ["product", "catalog"],
+    "expected_sql": "SELECT product_id, COUNT(*) AS units_sold FROM order_items GROUP BY product_id ORDER BY units_sold DESC LIMIT 10;",
+    "notes": "Ranks products by quantity sold."
+  },
+  {
+    "id": 17,
+    "category": "Product Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What are the top 10 product categories by number of items sold?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_items", "products", "product_category_name_translation"],
+    "expected_authorized_tables": ["order_items", "products", "product_category_name_translation"],
+    "expected_columns": ["product_category_name"],
+    "expected_business_terms": ["category", "catalog"],
+    "expected_sql": "SELECT p.product_category_name, COUNT(*) AS items_sold FROM order_items oi JOIN products p ON oi.product_id = p.product_id GROUP BY p.product_category_name ORDER BY items_sold DESC LIMIT 10;",
+    "notes": "Category-wise units sold."
+  },
+  {
+    "id": 18,
+    "category": "Revenue Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What are the top 10 product categories by revenue?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_items", "products"],
+    "expected_authorized_tables": ["order_items", "products"],
+    "expected_columns": ["product_category_name", "price"],
+    "expected_business_terms": ["revenue", "category"],
+    "expected_sql": "SELECT p.product_category_name, SUM(oi.price) AS revenue FROM order_items oi JOIN products p ON oi.product_id = p.product_id GROUP BY p.product_category_name ORDER BY revenue DESC LIMIT 10;",
+    "notes": "Revenue calculated from order item price."
+  },
+  {
+    "id": 19,
+    "category": "Revenue Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "Which states generate the highest revenue?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders", "order_payments"],
+    "expected_authorized_tables": ["customers", "orders", "order_payments"],
+    "expected_columns": ["customer_state", "payment_value"],
+    "expected_business_terms": ["revenue", "customer"],
+    "expected_sql": "SELECT c.customer_state, SUM(op.payment_value) AS revenue FROM customers c JOIN orders o ON c.customer_id=o.customer_id JOIN order_payments op ON o.order_id=op.order_id GROUP BY c.customer_state ORDER BY revenue DESC;",
+    "notes": "Revenue aggregated by customer state."
+  },
+  {
+    "id": 20,
+    "category": "Revenue Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "Which cities generate the highest revenue?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders", "order_payments"],
+    "expected_authorized_tables": ["customers", "orders", "order_payments"],
+    "expected_columns": ["customer_city", "payment_value"],
+    "expected_business_terms": ["revenue", "customer"],
+    "expected_sql": "SELECT c.customer_city, SUM(op.payment_value) AS revenue FROM customers c JOIN orders o ON c.customer_id=o.customer_id JOIN order_payments op ON o.order_id=op.order_id GROUP BY c.customer_city ORDER BY revenue DESC;",
+    "notes": "Revenue aggregated by customer city."
+  },
+  {
+    "id": 21,
+    "category": "Revenue Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What is the average order value?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders", "order_payments"],
+    "expected_authorized_tables": ["orders", "order_payments"],
+    "expected_columns": ["order_id", "payment_value"],
+    "expected_business_terms": ["order", "revenue"],
+    "expected_sql": "SELECT AVG(order_total) FROM (SELECT order_id, SUM(payment_value) AS order_total FROM order_payments GROUP BY order_id) t;",
+    "notes": "Average value per order using total payment amount."
+  },
+  {
+    "id": 22,
+    "category": "Customer Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "How many customers have placed more than one order?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders"],
+    "expected_authorized_tables": ["customers", "orders"],
+    "expected_columns": ["customer_id", "order_id"],
+    "expected_business_terms": ["customer", "orders"],
+    "expected_sql": "SELECT COUNT(*) FROM (SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(order_id) > 1) t;",
+    "notes": "Counts repeat customers."
+  },
+  {
+    "id": 23,
+    "category": "Order Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What percentage of orders are delivered?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": ["order_status"],
+    "expected_business_terms": ["delivery", "orders"],
+    "expected_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE order_status='delivered') / COUNT(*), 2) AS delivered_percentage FROM orders;",
+    "notes": "Delivery percentage over total orders."
+  },
+  {
+    "id": 24,
+    "category": "Order Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "What percentage of orders are cancelled?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": ["order_status"],
+    "expected_business_terms": ["orders", "cancellation"],
+    "expected_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE order_status='canceled') / COUNT(*), 2) AS cancelled_percentage FROM orders;",
+    "notes": "Cancellation percentage over total orders."
+  },
+  {
+    "id": 25,
+    "category": "Seller Analytics",
+    "difficulty": "medium",
+    "role": "admin",
+    "question": "Which sellers have the highest revenue?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders", "order_items", "order_payments"],
+    "expected_authorized_tables": ["orders", "order_items", "order_payments"],
+    "expected_columns": ["seller_id", "payment_value", "order_id"],
+    "expected_business_terms": ["seller", "revenue"],
+    "expected_sql": "SELECT oi.seller_id, SUM(op.payment_value) AS revenue FROM order_items oi JOIN orders o ON oi.order_id = o.order_id JOIN order_payments op ON o.order_id = op.order_id GROUP BY oi.seller_id ORDER BY revenue DESC;",
+    "notes": "Ranks sellers by total payment value."
+  },
+  {
+    "id": 26,
+    "category": "Delivery Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "What is the average delivery time in days for delivered orders?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": [
+      "order_purchase_timestamp",
+      "order_delivered_customer_date",
+      "order_status"
+    ],
+    "expected_business_terms": ["delivery"],
+    "expected_sql": "SELECT AVG(order_delivered_customer_date - order_purchase_timestamp) FROM orders WHERE order_status='delivered';",
+    "notes": "Average delivery duration."
+  },
+  {
+    "id": 27,
+    "category": "Delivery Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which states have the longest average delivery time?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders"],
+    "expected_authorized_tables": ["customers", "orders"],
+    "expected_columns": [
+      "customer_state",
+      "order_purchase_timestamp",
+      "order_delivered_customer_date"
+    ],
+    "expected_business_terms": ["delivery", "customer"],
+    "expected_sql": "SELECT c.customer_state, AVG(o.order_delivered_customer_date - o.order_purchase_timestamp) AS avg_delivery_time FROM customers c JOIN orders o ON c.customer_id=o.customer_id WHERE o.order_status='delivered' GROUP BY c.customer_state ORDER BY avg_delivery_time DESC;",
+    "notes": "Average delivery time grouped by customer state."
+  },
+  {
+    "id": 28,
+    "category": "Delivery Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "How many orders were delivered after the estimated delivery date?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": [
+      "order_delivered_customer_date",
+      "order_estimated_delivery_date"
+    ],
+    "expected_business_terms": ["delivery"],
+    "expected_sql": "SELECT COUNT(*) FROM orders WHERE order_delivered_customer_date > order_estimated_delivery_date;",
+    "notes": "Late deliveries."
+  },
+  {
+    "id": 29,
+    "category": "Delivery Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "What percentage of delivered orders arrived late?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": [
+      "order_delivered_customer_date",
+      "order_estimated_delivery_date",
+      "order_status"
+    ],
+    "expected_business_terms": ["delivery"],
+    "expected_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE order_delivered_customer_date > order_estimated_delivery_date) / COUNT(*),2) FROM orders WHERE order_status='delivered';",
+    "notes": "Percentage of late delivered orders."
+  },
+  {
+    "id": 30,
+    "category": "Seller Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which sellers have the highest average review scores?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["order_items", "orders", "order_reviews"],
+    "expected_authorized_tables": ["order_items", "orders", "order_reviews"],
+    "expected_columns": [
+      "seller_id",
+      "review_score",
+      "order_id"
+    ],
+    "expected_business_terms": ["seller", "review score"],
+    "expected_sql": "SELECT oi.seller_id, AVG(r.review_score) AS avg_review_score FROM order_items oi JOIN orders o ON oi.order_id=o.order_id JOIN order_reviews r ON o.order_id=r.order_id GROUP BY oi.seller_id ORDER BY avg_review_score DESC;",
+    "notes": "Average seller rating based on customer reviews."
+  },
+  {
+    "id": 31,
+    "category": "Seller Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which sellers have both more than 100 orders and an average review score above 4?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders", "order_items", "order_reviews"],
+    "expected_authorized_tables": ["orders", "order_items", "order_reviews"],
+    "expected_columns": ["seller_id", "order_id", "review_score"],
+    "expected_business_terms": ["seller", "review score"],
+    "expected_sql": "SELECT oi.seller_id, COUNT(DISTINCT oi.order_id) AS total_orders, AVG(r.review_score) AS avg_review_score FROM order_items oi JOIN order_reviews r ON oi.order_id = r.order_id GROUP BY oi.seller_id HAVING COUNT(DISTINCT oi.order_id) > 100 AND AVG(r.review_score) > 4 ORDER BY total_orders DESC;",
+    "notes": "Filters sellers by both order volume and customer satisfaction."
+  },
+  {
+    "id": 32,
+    "category": "Product Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which product categories have the highest average review score?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["products", "order_items", "order_reviews"],
+    "expected_authorized_tables": ["products", "order_items", "order_reviews"],
+    "expected_columns": ["product_category_name", "review_score", "product_id"],
+    "expected_business_terms": ["product category", "review score"],
+    "expected_sql": "SELECT p.product_category_name, AVG(r.review_score) AS avg_review_score FROM products p JOIN order_items oi ON p.product_id = oi.product_id JOIN order_reviews r ON oi.order_id = r.order_id GROUP BY p.product_category_name ORDER BY avg_review_score DESC;",
+    "notes": "Ranks categories by average customer rating."
+  },
+  {
+    "id": 33,
+    "category": "Product Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which product categories have the lowest average review score?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["products", "order_items", "order_reviews"],
+    "expected_authorized_tables": ["products", "order_items", "order_reviews"],
+    "expected_columns": ["product_category_name", "review_score", "product_id"],
+    "expected_business_terms": ["product category", "review score"],
+    "expected_sql": "SELECT p.product_category_name, AVG(r.review_score) AS avg_review_score FROM products p JOIN order_items oi ON p.product_id = oi.product_id JOIN order_reviews r ON oi.order_id = r.order_id GROUP BY p.product_category_name ORDER BY avg_review_score ASC;",
+    "notes": "Identifies lowest rated product categories."
+  },
+  {
+    "id": 34,
+    "category": "Product Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "What is the relationship between freight cost and review score by category?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["products", "order_items", "order_reviews"],
+    "expected_authorized_tables": ["products", "order_items", "order_reviews"],
+    "expected_columns": ["product_category_name", "freight_value", "review_score"],
+    "expected_business_terms": ["freight", "review score", "product category"],
+    "expected_sql": "SELECT p.product_category_name, AVG(oi.freight_value) AS avg_freight, AVG(r.review_score) AS avg_review_score FROM products p JOIN order_items oi ON p.product_id = oi.product_id JOIN order_reviews r ON oi.order_id = r.order_id GROUP BY p.product_category_name;",
+    "notes": "Provides average freight cost and review score per category."
+  },
+  {
+    "id": 35,
+    "category": "Business Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which categories generate high revenue but have low customer satisfaction?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["products", "order_items", "order_reviews", "order_payments", "orders"],
+    "expected_authorized_tables": ["products", "order_items", "order_reviews", "order_payments", "orders"],
+    "expected_columns": ["product_category_name", "payment_value", "review_score"],
+    "expected_business_terms": ["revenue", "review score", "product category"],
+    "expected_sql": "SELECT p.product_category_name, SUM(op.payment_value) AS revenue, AVG(r.review_score) AS avg_review_score FROM products p JOIN order_items oi ON p.product_id=oi.product_id JOIN orders o ON oi.order_id=o.order_id JOIN order_payments op ON o.order_id=op.order_id JOIN order_reviews r ON o.order_id=r.order_id GROUP BY p.product_category_name ORDER BY revenue DESC;",
+    "notes": "Business insight combining revenue and customer satisfaction."
+  },
+  {
+    "id": 36,
+    "category": "Customer Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "What are the top 10 customers by total spending?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders", "order_payments"],
+    "expected_authorized_tables": ["customers", "orders", "order_payments"],
+    "expected_columns": ["customer_unique_id", "payment_value", "order_id"],
+    "expected_business_terms": ["customer", "revenue"],
+    "expected_sql": "SELECT c.customer_unique_id, SUM(op.payment_value) AS total_spending FROM customers c JOIN orders o ON c.customer_id=o.customer_id JOIN order_payments op ON o.order_id=op.order_id GROUP BY c.customer_unique_id ORDER BY total_spending DESC LIMIT 10;",
+    "notes": "Ranks customers by total lifetime spending."
+  },
+  {
+    "id": 37,
+    "category": "Customer Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "What is the average lifetime value of customers?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders", "order_payments"],
+    "expected_authorized_tables": ["customers", "orders", "order_payments"],
+    "expected_columns": ["customer_unique_id", "payment_value"],
+    "expected_business_terms": ["customer lifetime value", "revenue"],
+    "expected_sql": "SELECT AVG(customer_total) FROM (SELECT c.customer_unique_id, SUM(op.payment_value) AS customer_total FROM customers c JOIN orders o ON c.customer_id=o.customer_id JOIN order_payments op ON o.order_id=op.order_id GROUP BY c.customer_unique_id) t;",
+    "notes": "Calculates average lifetime spend per customer."
+  },
+  {
+    "id": 38,
+    "category": "Customer Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which customers have spent more than twice the average customer spend?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders", "order_payments"],
+    "expected_authorized_tables": ["customers", "orders", "order_payments"],
+    "expected_columns": ["customer_unique_id", "payment_value"],
+    "expected_business_terms": ["customer lifetime value"],
+    "expected_sql": "SELECT c.customer_unique_id, SUM(op.payment_value) AS total_spending FROM customers c JOIN orders o ON c.customer_id=o.customer_id JOIN order_payments op ON o.order_id=op.order_id GROUP BY c.customer_unique_id HAVING SUM(op.payment_value) > (SELECT 2 * AVG(customer_total) FROM (SELECT SUM(payment_value) AS customer_total FROM orders o2 JOIN order_payments op2 ON o2.order_id=op2.order_id GROUP BY o2.customer_id) x);",
+    "notes": "Identifies high-value customers."
+  },
+  {
+    "id": 39,
+    "category": "Customer Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "What is the retention rate of customers who placed more than one order?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["orders"],
+    "expected_authorized_tables": ["orders"],
+    "expected_columns": ["customer_id", "order_id"],
+    "expected_business_terms": ["retention", "customer"],
+    "expected_sql": "SELECT ROUND(100.0 * COUNT(*) / (SELECT COUNT(DISTINCT customer_id) FROM orders),2) FROM (SELECT customer_id FROM orders GROUP BY customer_id HAVING COUNT(order_id) > 1) t;",
+    "notes": "Percentage of repeat customers."
+  },
+  {
+    "id": 40,
+    "category": "Customer Analytics",
+    "difficulty": "hard",
+    "role": "admin",
+    "question": "Which states have the highest customer retention rate?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": ["customers", "orders"],
+    "expected_authorized_tables": ["customers", "orders"],
+    "expected_columns": ["customer_state", "customer_id", "order_id"],
+    "expected_business_terms": ["retention", "customer"],
+    "expected_sql": "SELECT c.customer_state, COUNT(DISTINCT CASE WHEN o.order_count > 1 THEN c.customer_id END) * 100.0 / COUNT(DISTINCT c.customer_id) AS retention_rate FROM customers c JOIN (SELECT customer_id, COUNT(order_id) AS order_count FROM orders GROUP BY customer_id) o ON c.customer_id=o.customer_id GROUP BY c.customer_state ORDER BY retention_rate DESC;",
+    "notes": "Retention calculated by state."
+  },
+  {
+    "id": 41,
+    "category": "Time Series Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "For each month, what were the top 3 product categories by revenue?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "orders",
+      "order_items",
+      "products",
+      "order_payments"
+    ],
+    "expected_authorized_tables": [
+      "orders",
+      "order_items",
+      "products",
+      "order_payments"
+    ],
+    "expected_columns": [
+      "order_purchase_timestamp",
+      "product_category_name",
+      "payment_value",
+      "order_id",
+      "product_id"
+    ],
+    "expected_business_terms": [
+      "revenue",
+      "product category"
+    ],
+    "expected_sql": "WITH monthly_revenue AS (SELECT DATE_TRUNC('month', o.order_purchase_timestamp) AS month, p.product_category_name, SUM(op.payment_value) AS revenue FROM orders o JOIN order_items oi ON o.order_id = oi.order_id JOIN products p ON oi.product_id = p.product_id JOIN order_payments op ON o.order_id = op.order_id GROUP BY month, p.product_category_name) SELECT * FROM (SELECT *, ROW_NUMBER() OVER(PARTITION BY month ORDER BY revenue DESC) rn FROM monthly_revenue) t WHERE rn <= 3;",
+    "notes": "Monthly top 3 categories by revenue."
+  },
+  {
+    "id": 42,
+    "category": "Seller Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Which sellers consistently ranked in the top 10 by monthly revenue?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "orders",
+      "order_items",
+      "order_payments"
+    ],
+    "expected_authorized_tables": [
+      "orders",
+      "order_items",
+      "order_payments"
+    ],
+    "expected_columns": [
+      "seller_id",
+      "payment_value",
+      "order_purchase_timestamp"
+    ],
+    "expected_business_terms": [
+      "seller",
+      "revenue"
+    ],
+    "expected_sql": "Generate monthly seller revenue and rank sellers using ROW_NUMBER() over each month. Return sellers appearing in the monthly Top 10 multiple times.",
+    "notes": "Requires window functions."
+  },
+  {
+    "id": 43,
+    "category": "Growth Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Identify product categories whose revenue grew month-over-month for at least three consecutive months.",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "orders",
+      "order_items",
+      "products",
+      "order_payments"
+    ],
+    "expected_authorized_tables": [
+      "orders",
+      "order_items",
+      "products",
+      "order_payments"
+    ],
+    "expected_columns": [
+      "order_purchase_timestamp",
+      "product_category_name",
+      "payment_value"
+    ],
+    "expected_business_terms": [
+      "revenue",
+      "product category"
+    ],
+    "expected_sql": "Aggregate monthly revenue by category and use LAG() to compare previous month's revenue. Return categories with positive growth for at least three consecutive months.",
+    "notes": "Uses LAG() and time-series analysis."
+  },
+  {
+    "id": 44,
+    "category": "Seller Performance",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Which sellers have above-average revenue and above-average review scores?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "orders",
+      "order_items",
+      "order_reviews",
+      "order_payments"
+    ],
+    "expected_authorized_tables": [
+      "orders",
+      "order_items",
+      "order_reviews",
+      "order_payments"
+    ],
+    "expected_columns": [
+      "seller_id",
+      "payment_value",
+      "review_score"
+    ],
+    "expected_business_terms": [
+      "seller",
+      "revenue",
+      "review score"
+    ],
+    "expected_sql": "Calculate seller revenue and average review score, compare both against overall averages, and return qualifying sellers.",
+    "notes": "Combines revenue and customer satisfaction KPIs."
+  },
+  {
+    "id": 45,
+    "category": "Product Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Which product categories have the highest revenue per seller?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "products",
+      "order_items",
+      "order_payments",
+      "orders"
+    ],
+    "expected_authorized_tables": [
+      "products",
+      "order_items",
+      "order_payments",
+      "orders"
+    ],
+    "expected_columns": [
+      "product_category_name",
+      "seller_id",
+      "payment_value"
+    ],
+    "expected_business_terms": [
+      "product category",
+      "seller",
+      "revenue"
+    ],
+    "expected_sql": "Compute total revenue grouped by product category and seller, then rank categories by revenue per seller.",
+    "notes": "Revenue normalized at seller level."
+  },
+  {
+    "id": 46,
+    "category": "Delivery Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "What is the average delay between purchase and delivery by state?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "customers",
+      "orders"
+    ],
+    "expected_authorized_tables": [
+      "customers",
+      "orders"
+    ],
+    "expected_columns": [
+      "customer_state",
+      "order_purchase_timestamp",
+      "order_delivered_customer_date"
+    ],
+    "expected_business_terms": [
+      "delivery",
+      "customer"
+    ],
+    "expected_sql": "SELECT c.customer_state, AVG(o.order_delivered_customer_date - o.order_purchase_timestamp) AS avg_delay FROM customers c JOIN orders o ON c.customer_id=o.customer_id WHERE o.order_status='delivered' GROUP BY c.customer_state ORDER BY avg_delay DESC;",
+    "notes": "Average purchase-to-delivery duration by state."
+  },
+  {
+    "id": 47,
+    "category": "Payment Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Which payment methods are associated with the highest average order value?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "orders",
+      "order_payments"
+    ],
+    "expected_authorized_tables": [
+      "orders",
+      "order_payments"
+    ],
+    "expected_columns": [
+      "payment_type",
+      "payment_value"
+    ],
+    "expected_business_terms": [
+      "payment",
+      "order value"
+    ],
+    "expected_sql": "SELECT payment_type, AVG(payment_value) AS avg_order_value FROM order_payments GROUP BY payment_type ORDER BY avg_order_value DESC;",
+    "notes": "Ranks payment methods by average payment value."
+  },
+  {
+    "id": 48,
+    "category": "Customer Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Which customer cities generate the highest revenue per customer?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "customers",
+      "orders",
+      "order_payments"
+    ],
+    "expected_authorized_tables": [
+      "customers",
+      "orders",
+      "order_payments"
+    ],
+    "expected_columns": [
+      "customer_city",
+      "customer_unique_id",
+      "payment_value"
+    ],
+    "expected_business_terms": [
+      "customer",
+      "revenue"
+    ],
+    "expected_sql": "SELECT c.customer_city, SUM(op.payment_value)/COUNT(DISTINCT c.customer_unique_id) AS revenue_per_customer FROM customers c JOIN orders o ON c.customer_id=o.customer_id JOIN order_payments op ON o.order_id=op.order_id GROUP BY c.customer_city ORDER BY revenue_per_customer DESC;",
+    "notes": "Revenue normalized by unique customers."
+  },
+  {
+    "id": 49,
+    "category": "Product Analytics",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Among product categories with at least 1000 sales, which have the best customer ratings?",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "products",
+      "order_items",
+      "order_reviews"
+    ],
+    "expected_authorized_tables": [
+      "products",
+      "order_items",
+      "order_reviews"
+    ],
+    "expected_columns": [
+      "product_category_name",
+      "review_score",
+      "product_id"
+    ],
+    "expected_business_terms": [
+      "product category",
+      "review score"
+    ],
+    "expected_sql": "SELECT p.product_category_name, AVG(r.review_score) AS avg_review_score FROM products p JOIN order_items oi ON p.product_id=oi.product_id JOIN order_reviews r ON oi.order_id=r.order_id GROUP BY p.product_category_name HAVING COUNT(*)>=1000 ORDER BY avg_review_score DESC;",
+    "notes": "Minimum sales threshold before ranking."
+  },
+  {
+    "id": 50,
+    "category": "Executive Dashboard",
+    "difficulty": "expert",
+    "role": "admin",
+    "question": "Compare monthly revenue, average review score, and average delivery time in a single report.",
+    "expected_status": "SUCCESS",
+    "expected_retrieved_tables": [
+      "orders",
+      "order_payments",
+      "order_reviews"
+    ],
+    "expected_authorized_tables": [
+      "orders",
+      "order_payments",
+      "order_reviews"
+    ],
+    "expected_columns": [
+      "order_purchase_timestamp",
+      "payment_value",
+      "review_score",
+      "order_delivered_customer_date"
+    ],
+    "expected_business_terms": [
+      "revenue",
+      "review score",
+      "delivery"
+    ],
+    "expected_sql": "Generate a monthly report containing SUM(payment_value), AVG(review_score), and AVG(order_delivered_customer_date - order_purchase_timestamp) grouped by month.",
+    "notes": "Executive KPI dashboard combining finance, customer satisfaction, and logistics."
+  }
+]
